@@ -33,17 +33,17 @@ public class Juego {
     /*
     * Intercambia turnos entre los jugadores y pone la ficha en la casilla correspondiente
     */
-    public void ponerFicha(String codCasilla){
-        Casilla casilla = tablero.devolverCasilla(codCasilla);
-        
-        if(casilla != null){
+    public void ponerFicha(int fila, int columna){
+        if (fila > 0 && fila <= 3 && columna > 0 && columna <= 3){
+            Casilla casilla = tablero.devolverCasilla(fila-1, columna-1);
+            
             if(turno.equals(Jugador.CIRCULO)){
                 Circulo ficha = new Circulo();
-                tablero.introducirFicha(codCasilla, ficha);
+                casilla.introducirFicha(ficha);
                 turno = Jugador.CRUZ;
             }else{
                 Cruz ficha = new Cruz();
-                tablero.introducirFicha(codCasilla, ficha);
+                casilla.introducirFicha(ficha);
                 turno = Jugador.CIRCULO;
             }
         }
@@ -51,13 +51,10 @@ public class Juego {
     
     public String mostrarTablero(){
         String cadena = "";
-        for(int i = 1; i <= 9; i++){
-            String tipo = tablero.devolverTipoCasilla(String.valueOf(i));
-            if(tipo == null){
-                tipo = " ";
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                cadena = cadena + " | " + tablero.devolverTipoCasilla(i, j) + " | ";
             }
-                
-            cadena = cadena + " | " + tipo + " | ";
         }
         return cadena;
     }

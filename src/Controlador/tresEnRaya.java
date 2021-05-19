@@ -18,10 +18,10 @@ public class tresEnRaya {
          Scanner scanner = new Scanner(System.in);
          Juego juego = new Juego();
          while(true){
-             String codigo = scanner.next();
-             juego.ponerFicha(codigo);
+             int fila = scanner.nextInt();
+             int columna = scanner.nextInt();
+             juego.ponerFicha(fila, columna);
              System.out.println(juego.mostrarTablero());
-             int i = 0;
              
              
          }

@@ -15,10 +15,10 @@ import java.util.Map;
 public final class Tablero {
     public final int CASILLA_INICIAL = 1;
     public final int CASILLA_FINAL = 9;
-    private Map<String, Casilla> tablero;
+    private Casilla tablero[][];
     
     public Tablero(){
-        tablero = new HashMap<>();
+        tablero = new Casilla[3][3];
         cargarTablero();
        
     }
@@ -27,48 +27,48 @@ public final class Tablero {
     * Llena el tablero con 9 casillas con su respectivo codigo (1-9)
     */
     public void cargarTablero(){
-        for(int cod = CASILLA_INICIAL; cod <= CASILLA_FINAL; cod++){
-            Casilla aux = new Casilla(String.valueOf(cod));
-            if(tablero.get(aux.devuelveCodigo()) == null){
-                tablero.put(aux.devuelveCodigo(), aux);
+        int cod = 1;
+            for(int i = 0; i < 3; i++){
+                for(int j = 0; j < 3; j++){
+                    Casilla aux = new Casilla(String.valueOf(cod));
+                    tablero[i][j] = aux;
+                    cod++;
+                }
             }
-        }
+            
+            
+        
     }
     
     /*
     * Introduce la ficha correpondiente en la casilla(codCasilla) del tablero
-    */
-    public void introducirFicha(String codCasilla, Ficha ficha){
+    
+    public void introducirFicha(int fila, int columna, Ficha ficha){
         if(ficha != null){
-            if(codCasilla != null){
-                Casilla casilla = tablero.get(codCasilla);
+            if(fila > 0 || fila <= 3 || columna > 0 || columna <= 3){
+                Casilla casilla = tablero[fila-1][columna-1];
                 if(casilla != null){
                     casilla.introducirFicha(ficha);
                 }
             }
         }
     }
+    */
     
-    public Map<String,Casilla> devolverTablero(){
-        return tablero;
-    }
     
     /*
     * Devuelve la casilla(codCasilla)
     */
-    public Casilla devolverCasilla(String codCasilla){
-        if(codCasilla != null){
-            return tablero.get(codCasilla);
+    public Casilla devolverCasilla(int fila, int columna){
+        if(fila > 0 || fila <= 3 || columna > 0 || columna <= 3){
+            return tablero[fila][columna];
         }
         return null;
     }
     
-    public String devolverTipoCasilla(String codCasilla){
-        if(codCasilla != null){
-            Casilla casilla = tablero.get(codCasilla);
-            if(casilla != null){
-                return casilla.devuelveTipo();
-            }
+    public String devolverTipoCasilla(int fila, int columna){
+        if(fila > 0 || fila <= 3 || columna > 0 || columna <= 3){
+            return tablero[fila][columna].devuelveTipo();
         }
         return null;
     }
