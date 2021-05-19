@@ -48,4 +48,17 @@ public class Juego {
             }
         }
     }
+    
+    public String mostrarTablero(){
+        String cadena = "";
+        for(int i = 1; i <= 9; i++){
+            String tipo = tablero.devolverTipoCasilla(String.valueOf(i));
+            if(tipo == null){
+                tipo = " ";
+            }
+                
+            cadena = cadena + " | " + tipo + " | ";
+        }
+        return cadena;
+    }
 }

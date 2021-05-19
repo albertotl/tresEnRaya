@@ -25,6 +25,13 @@ public class Casilla {
     public void introducirFicha(Ficha ficha){
         this.ficha = ficha;
     }
+    
+    public String devuelveTipo(){
+        if(this.ficha != null){
+            return ficha.devolverTipo();
+        }
+        return null;
+    }
 }
 
 

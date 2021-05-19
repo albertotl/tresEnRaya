@@ -62,4 +62,14 @@ public final class Tablero {
         }
         return null;
     }
+    
+    public String devolverTipoCasilla(String codCasilla){
+        if(codCasilla != null){
+            Casilla casilla = tablero.get(codCasilla);
+            if(casilla != null){
+                return casilla.devuelveTipo();
+            }
+        }
+        return null;
+    }
 }
