@@ -5,79 +5,95 @@
  */
 package Modelo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author Alberto
  */
 public final class Tablero {
+
     public final int CASILLA_INICIAL = 1;
     public final int CASILLA_FINAL = 9;
     public final static int DIMENSION = 3;
     private Casilla tablero[][];
-    
-    
-    public Tablero(){
+
+    public Tablero() {
         tablero = new Casilla[DIMENSION][DIMENSION];
         cargarTablero();
-       
+
     }
-    
+
+    /*
+    * Devuelve la fila y columna a partir del codigo de casilla
+     */
+    public int[] devuelveFilaColumna(String codigo) {
+        int[] datos = new int[2];
+        if (Integer.valueOf(codigo) <= 9 && Integer.valueOf(codigo) >= 1) {
+            for (int i = 0; i < DIMENSION; i++) {
+                for (int j = 0; j < DIMENSION; j++) {
+                    if (tablero[i][j].devuelveCodigo().equals(codigo)) {
+                        datos[0] = i;
+                        datos[1] = j;
+                    }
+                }
+            }
+            return datos;
+        }
+        return null;
+    }
+
     /*
     * Llena el tablero con 9 casillas con su respectivo codigo (1-9)
-    */
-    public void cargarTablero(){
+     */
+    public void cargarTablero() {
         int cod = 1;
-            for(int i = 0; i < DIMENSION; i++){
-                for(int j = 0; j < DIMENSION; j++){
-                    tablero[i][j] =  new Casilla(String.valueOf(cod));
-                    cod++;
-                }
-            }
-            
-            
-        
-    }
-    
-    /*
-    * Introduce la ficha correpondiente en la casilla(codCasilla) del tablero
-    
-    public void introducirFicha(int fila, int columna, Ficha ficha){
-        if(ficha != null){
-            if(fila > 0 || fila <= 3 || columna > 0 || columna <= 3){
-                Casilla casilla = tablero[fila-1][columna-1];
-                if(casilla != null){
-                    casilla.introducirFicha(ficha);
-                }
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
+                tablero[i][j] = new Casilla(String.valueOf(cod));
+                cod++;
             }
         }
     }
-    */
-    
-    
+
     /*
-    * Devuelve la casilla(codCasilla)
+    * Devuelve la casilla a partir del codigo de casilla
+     */
+    public Casilla devolverCasilla(String codigo) {
+        int[] datos = devuelveFilaColumna(codigo);
+        if (datos != null) {
+            return tablero[datos[0]][datos[1]];
+        }
+        return null;
+    }
+
+    /*
+    * Devuelve el tipo de casilla a partir del codigo de la casilla 
+    * (Para poner una ficha en una casilla)
+     */
+    public String devolverTipoCasilla(String codigo) {
+        int[] datos = devuelveFilaColumna(codigo);
+        if (datos != null) {
+            return tablero[datos[0]][datos[1]].devuelveTipo();
+        }
+        return null;
+    }
+
+    /*
+    * Devuelve el tipo de casilla a partir de la fila y la columna
+    * (Para comprobar la partida y para mostrar en pantalla)
+    * No hace falta comprobar las filas y columnas debido a que siempre son validas
+     */
+    public String devolverTipoCasilla(int fila, int columna) {
+        return tablero[fila][columna].devuelveTipo();
+    }
+
+
+    /*
+    * Devuelve verdadero en caso de que el tablero este completo
     */
-    public Casilla devolverCasilla(int fila, int columna){
-        if(fila > 0 || fila <= DIMENSION || columna > 0 || columna <= 3){
-            return tablero[fila][columna];
-        }
-        return null;
-    }
-    
-    public String devolverTipoCasilla(int fila, int columna){
-        if(fila > 0 || fila <= DIMENSION || columna > 0 || columna <= 3){
-            return tablero[fila][columna].devuelveTipo();
-        }
-        return null;
-    }
-    
-    public boolean completo(){
-        for(int i = 0; i < DIMENSION; i++){
-            for(int j = 0; j < DIMENSION; j++){
-                if(tablero[i][j].devuelveTipo() == null){
+    public boolean completo() {
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
+                if (tablero[i][j].devuelveTipo() == null) {
                     return false;
                 }
             }

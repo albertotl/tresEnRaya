@@ -27,7 +27,7 @@ public class Casilla {
     }
     
     public String devuelveTipo(){
-        if(this.ficha != null){
+        if(ficha != null){
             return ficha.devolverTipo();
         }
         return null;
