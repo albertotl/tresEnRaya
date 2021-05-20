@@ -12,7 +12,7 @@ import java.util.Random;
  * @author Alberto
  */
 public class Juego {
-    private enum Jugador{CIRCULO, CRUZ};
+    public enum Jugador{CIRCULO, CRUZ};
     
     private Tablero tablero;
     private Jugador turno;
