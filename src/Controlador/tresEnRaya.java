@@ -14,10 +14,15 @@ public class tresEnRaya {
          Scanner scanner = new Scanner(System.in);
          Juego juego = new Juego();
          while(true){
+             System.out.println(juego.mostrarTablero());
              String codigo = scanner.next();
              juego.ponerFicha(codigo);
              System.out.println(juego.verificarTablero());
-             System.out.println(juego.mostrarTablero());
+             if(juego.verificarTablero() != ""){
+                 System.out.println(juego.mostrarTablero());
+                 break;
+                         
+             }
          }
     }
 }
