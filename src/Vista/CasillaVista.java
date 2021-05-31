@@ -20,6 +20,7 @@ public class CasillaVista extends JLabel{
     private JuegoVista vista;
     
     private boolean seleccionada = false;
+    private boolean confirmada = false;
     private String codigo;
     private String tipo;
     
@@ -92,14 +93,24 @@ public class CasillaVista extends JLabel{
     /*
     * Confirma donde queda puesta la ficha
     */
-    public void confirmar(enum Modelo.Juego.Jugador turno){
-        if(turno.equals(Modelo.Juego.Jugador.CIRCULO)){
+    public void confirmar(String tipo){
+        if(tipo.equals(CIRCULO))){
             setIcon(new ImageIcon("img/O_BLANCO.png"));
+            confirmada = true;
             tipo = CIRCULO;
         }else{
             setIcon(new ImageIcon("img/X_BLANCO.png"));
+            confirmada = true;
             tipo = CRUZ;
         }
         seleccionada = false;
     }
+    
+    /**
+   * Inicia asiento vista
+   */
+    public void iniciar(){
+       deseleccionar();
+       codigo = "";
+   }
 }

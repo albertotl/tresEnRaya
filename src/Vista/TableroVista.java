@@ -23,9 +23,8 @@ public class TableroVista extends JPanel {
     public static final boolean RECIBE_EVENTOS_RATON = true;
     public static final boolean NO_RECIBE_EVENTOS_RATON = false;
     
-    TableroVista(JuegoVista vista, Tablero tablero, boolean recibeEventosRaton){
+    TableroVista(JuegoVista vista, boolean recibeEventosRaton){
         this.vista = vista;
-        this.tablero = tablero;
         
         crearCasillas(recibeEventosRaton);
         this.setPreferredSize(new Dimension(DIMENSION * ANCHURA_COLUMNA,
@@ -48,6 +47,71 @@ public class TableroVista extends JPanel {
     public void ponerTablero(Tablero tablero){
         this.tablero = tablero;
     }
+    
+    private CasillaVista buscarCasillaVista(String codigo){
+        for (int fila = 0; fila < DIMENSION; fila++) {
+            for (int columna = 0; columna < DIMENSION; columna++) {
+
+                String codigoCasilla = casillasVista[fila][columnas].
+                        obtenerCodigo();
+                if(codigoCasilla != null){
+                   if (codigoCasilla.equals(codigo)) {
+                        return casillasVista[fila][columna];
+                    } 
+                }
+            }
+        }
+        return null;
+    }
+    
+    public void confirmarCasilla(String codigo, enum Modelo.Juego.Jugador turno){
+        CasillaVista casillaVista = buscarCasillaVista(codigo);
+        
+        if(casillaVista != null){
+            casillaVista.confirmarCasilla(codigo, turno);
+        }
+    }
+    
+    /**
+     * Inicia vista del tablero
+     */
+    private void iniciarTableroVista() {
+        for (int fila = 0; fila < DIMENSION; fila++) {
+            for (int columna = 0; columna < DIMENSION; columna++) {
+                casillasVista[columna][fila].iniciar();
+            }
+        }
+    } 
+    
+    private void bloqueaCasillas(CasillaVista casilla){
+        if (vista.devuelveTablero() == null){
+            casillaVista.setEnabled(false);
+        }else{
+            casillaVista.setEnabled(true);
+        }
+    }
+    
+    public void pintaCasilla(CasillaVista casillaVista, Casilla casilla){
+        if(casilla.devuelveFicha != null){
+            casillaVista.confirmar(casilla.devuelveTipò());
+        }
+    }
+    
+    public void ponerCasillas(){
+        iniciarTableroVista();
+        Casilla[][] casillas = tablero.devuelveCasillas();
+        for (int fila = 0; fila < DIMENSION; fila++) {
+            for (int columna = 0; columna < DIMENSION; columna++) {
+                CasillaVista casillaVista = casillasVista[fila][columna];
+                casillaVista.ponerCodigo(casillas[fila][columna].devuelveCodigo);
+                bloqueaCasillas(casillaVista);
+                pintaCasilla(casillaVista, casillas[fila][columna]);
+            }
+        }
+    }
+    
+    
+    
     
     
     

@@ -14,12 +14,16 @@ public final class Tablero {
     public final int CASILLA_INICIAL = 1;
     public final int CASILLA_FINAL = 9;
     public final static int DIMENSION = 3;
-    private Casilla tablero[][];
+    private Casilla[][] casillas;
 
     public Tablero() {
-        tablero = new Casilla[DIMENSION][DIMENSION];
+        casillas = new Casilla[DIMENSION][DIMENSION];
         cargarTablero();
 
+    }
+    
+    public Casilla[][] devuelveCasillas(){
+        return casillas;
     }
 
     /*
@@ -30,7 +34,7 @@ public final class Tablero {
         if (Integer.valueOf(codigo) <= 9 && Integer.valueOf(codigo) >= 1) {
             for (int i = 0; i < DIMENSION; i++) {
                 for (int j = 0; j < DIMENSION; j++) {
-                    if (tablero[i][j].devuelveCodigo().equals(codigo)) {
+                    if (casillas[i][j].devuelveCodigo().equals(codigo)) {
                         datos[0] = i;
                         datos[1] = j;
                     }
@@ -48,7 +52,7 @@ public final class Tablero {
         int cod = 1;
         for (int i = 0; i < DIMENSION; i++) {
             for (int j = 0; j < DIMENSION; j++) {
-                tablero[i][j] = new Casilla(String.valueOf(cod));
+                casillas[i][j] = new Casilla(String.valueOf(cod));
                 cod++;
             }
         }
@@ -60,7 +64,7 @@ public final class Tablero {
     public Casilla devolverCasilla(String codigo) {
         int[] datos = devuelveFilaColumna(codigo);
         if (datos != null) {
-            return tablero[datos[0]][datos[1]];
+            return casillas[datos[0]][datos[1]];
         }
         return null;
     }
@@ -72,7 +76,7 @@ public final class Tablero {
     public String devolverTipoCasilla(String codigo) {
         int[] datos = devuelveFilaColumna(codigo);
         if (datos != null) {
-            return tablero[datos[0]][datos[1]].devuelveTipo();
+            return casillas[datos[0]][datos[1]].devuelveTipo();
         }
         return null;
     }
@@ -83,7 +87,7 @@ public final class Tablero {
     * No hace falta comprobar las filas y columnas debido a que siempre son validas
      */
     public String devolverTipoCasilla(int fila, int columna) {
-        return tablero[fila][columna].devuelveTipo();
+        return casillas[fila][columna].devuelveTipo();
     }
 
 
@@ -93,7 +97,7 @@ public final class Tablero {
     public boolean completo() {
         for (int i = 0; i < DIMENSION; i++) {
             for (int j = 0; j < DIMENSION; j++) {
-                if (tablero[i][j].devuelveTipo() == null) {
+                if (casillas[i][j].devuelveTipo() == null) {
                     return false;
                 }
             }

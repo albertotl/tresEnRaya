@@ -22,6 +22,10 @@ public class Casilla {
         return codigo;
     }
     
+    public Ficha devuelveFicha(){
+        return ficha;
+    }
+    
     public void introducirFicha(Ficha ficha){
         this.ficha = ficha;
     }
