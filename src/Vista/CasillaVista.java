@@ -17,7 +17,7 @@ import javax.swing.border.BevelBorder;
  * @author Alberto
  */
 public class CasillaVista extends JLabel{
-    private TableroVista vista;
+    private JuegoVista vista;
     
     private boolean seleccionada = false;
     private String codigo;
@@ -31,7 +31,7 @@ public class CasillaVista extends JLabel{
     public final static String CIRCULO = "O";
     public final static String CRUZ = "X";
     
-    CasillaVista(TableroVista vista, boolean recibeEventosRaton){
+    CasillaVista(JuegoVista vista, boolean recibeEventosRaton){
         this.vista = vista;
         //fuente = getFont();
         atributos = fuente.getAttributes();
@@ -67,12 +67,6 @@ public class CasillaVista extends JLabel{
         this.codigo = codigo;
     }
     
-     /**
-    * Obtiene la el codigo del asiento
-    */
-    public boolean estaOcupada(){
-        return ocupada;
-    }
     
     /**
     * Selecciona la casilla para ver su previsualización
