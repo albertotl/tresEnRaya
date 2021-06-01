@@ -30,7 +30,7 @@ public class tresEnRaya implements OyenteVista{
     public void eventoProducido(Evento evento, Object obj){
         switch(evento){
             case PONER_FICHA:
-                juego.ponerFicha("");
+                juego.ponerFicha(String.valueOf(obj));
                 break;
             
             case SALIR:

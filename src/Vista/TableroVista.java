@@ -16,8 +16,8 @@ import javax.swing.JPanel;
  * @author Alberto
  */
 public class TableroVista extends JPanel {
-    private static final int ALTURA_FILA = 150;
-    private static final int ANCHURA_COLUMNA = 150;
+    private static final int ALTURA_FILA = 85;
+    private static final int ANCHURA_COLUMNA = 85;
     private static final int DIMENSION = Modelo.Tablero.DIMENSION;
     
     private CasillaVista[][] casillasVista;
@@ -90,7 +90,6 @@ public class TableroVista extends JPanel {
     } 
     
     public void pintaCasilla(CasillaVista casillaVista, Casilla casilla){
-        casillaVista.ponerTexto(casilla.devuelveCodigo, CasillaVista.Formato.NORMAL);
         if(casilla.devuelveFicha != null){
             casillaVista.confirmar(casilla.devuelveTipo());
         }
@@ -102,7 +101,6 @@ public class TableroVista extends JPanel {
         for (int fila = 0; fila < DIMENSION; fila++) {
             for (int columna = 0; columna < DIMENSION; columna++) {
                 CasillaVista casillaVista = casillasVista[fila][columna];
-                casillaVista.setEnabled(true);
                 casillaVista.ponerCodigo(casillas[fila][columna].devuelveCodigo());
                 pintaCasilla(casillaVista, casillas[fila][columna]);
             }
