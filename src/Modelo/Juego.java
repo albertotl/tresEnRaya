@@ -5,6 +5,8 @@
  */
 package Modelo;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Random;
 
 /**
@@ -12,24 +14,33 @@ import java.util.Random;
  * @author Alberto
  */
 public class Juego {
+    
+    public static final String VERSION = "Tres en Raya 1.0";
+    public static final String CIRCULO = "O";
+    public static final String CRUZ = "X";
 
-    public enum Jugador {
-        CIRCULO, CRUZ
-    };
-
+    private PropertyChangeSupport observadores;
     private Tablero tablero;
-    private Jugador turno;
+    private String turno;
 
     public Juego() {
         tablero = new Tablero();
         Random r = new Random();
-        int valor = r.nextInt(1);  // Entre 0 y 1.
+        int valor = r.nextInt(2);  // Entre 0 y 1.
 
         if (valor == 0) {
-            turno = Jugador.CIRCULO;
+            turno = CIRCULO;
         } else {
-            turno = Jugador.CRUZ;
+            turno = CRUZ;
         }
+    }
+    
+    public Tablero devuelveTablero(){
+        return tablero;
+    }
+    
+    public String devuelveTurno(){
+        return turno;
     }
 
     /*
@@ -40,14 +51,14 @@ public class Juego {
 
         if (casilla != null) {
             if (casilla.devuelveTipo() == null || tablero.completo()) {
-                if (turno.equals(Jugador.CIRCULO)) {
+                if (turno.equals(CIRCULO)) {
                     Circulo ficha = new Circulo();
                     casilla.introducirFicha(ficha);
-                    turno = Jugador.CRUZ;
+                    turno = CRUZ;
                 } else {
                     Cruz ficha = new Cruz();
                     casilla.introducirFicha(ficha);
-                    turno = Jugador.CIRCULO;
+                    turno = CIRCULO;
                 }
             }
         }
@@ -186,5 +197,19 @@ public class Juego {
         }
 
         return "";
+    }
+    
+    public boolean completo(){
+        if(tablero != null){
+            return tablero.completo();
+        }
+        return false;
+    }
+    
+    /*
+    * Añade un observador a la oficina
+    */
+    public void nuevoObservador(PropertyChangeListener observador){
+        this.observadores.addPropertyChangeListener(observador);
     }
 }

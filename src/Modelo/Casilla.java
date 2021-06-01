@@ -12,6 +12,8 @@ package Modelo;
 public class Casilla {
     private String codigo;
     private Ficha ficha;
+    public Object devuelveFicha;
+    public String devuelveCodigo;
     
     public Casilla(String codigo){
         this.codigo = codigo;
@@ -36,6 +38,8 @@ public class Casilla {
         }
         return null;
     }
+
+   
 }
 
 

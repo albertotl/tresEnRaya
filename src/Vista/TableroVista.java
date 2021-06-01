@@ -5,18 +5,23 @@
  */
 package Vista;
 
+import Modelo.Casilla;
+import Modelo.Tablero;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import javax.swing.JPanel;
+
 /**
  *
  * @author Alberto
  */
 public class TableroVista extends JPanel {
-    private static final int ALTURA_FILA = 50;
-    private static final int ANCHURA_COLUMNA = 50;
+    private static final int ALTURA_FILA = 150;
+    private static final int ANCHURA_COLUMNA = 150;
     private static final int DIMENSION = Modelo.Tablero.DIMENSION;
     
     private CasillaVista[][] casillasVista;
     private JuegoVista vista;
-    
     
     private Tablero tablero;
     
@@ -25,7 +30,7 @@ public class TableroVista extends JPanel {
     
     TableroVista(JuegoVista vista, boolean recibeEventosRaton){
         this.vista = vista;
-        
+        casillasVista = new CasillaVista[DIMENSION][DIMENSION];
         crearCasillas(recibeEventosRaton);
         this.setPreferredSize(new Dimension(DIMENSION * ANCHURA_COLUMNA,
                 DIMENSION * ALTURA_FILA));
@@ -39,8 +44,9 @@ public class TableroVista extends JPanel {
         for(int fila = 0; fila < DIMENSION; fila++){
             for(int columna = 0; columna < DIMENSION; columna++){
                 casillasVista[fila][columna] = new CasillaVista(vista, recibeEventosRaton);
+                add(casillasVista[fila][columna]);
             }
-            add(casillasVista[fila][columna]);
+            
         }
     }
     
@@ -52,7 +58,7 @@ public class TableroVista extends JPanel {
         for (int fila = 0; fila < DIMENSION; fila++) {
             for (int columna = 0; columna < DIMENSION; columna++) {
 
-                String codigoCasilla = casillasVista[fila][columnas].
+                String codigoCasilla = casillasVista[fila][columna].
                         obtenerCodigo();
                 if(codigoCasilla != null){
                    if (codigoCasilla.equals(codigo)) {
@@ -64,11 +70,11 @@ public class TableroVista extends JPanel {
         return null;
     }
     
-    public void confirmarCasilla(String codigo, enum Modelo.Juego.Jugador turno){
+    public void confirmarCasilla(String codigo, String tipo){
         CasillaVista casillaVista = buscarCasillaVista(codigo);
         
         if(casillaVista != null){
-            casillaVista.confirmarCasilla(codigo, turno);
+            casillaVista.confirmar(tipo);
         }
     }
     
@@ -83,17 +89,10 @@ public class TableroVista extends JPanel {
         }
     } 
     
-    private void bloqueaCasillas(CasillaVista casilla){
-        if (vista.devuelveTablero() == null){
-            casillaVista.setEnabled(false);
-        }else{
-            casillaVista.setEnabled(true);
-        }
-    }
-    
     public void pintaCasilla(CasillaVista casillaVista, Casilla casilla){
+        casillaVista.ponerTexto(casilla.devuelveCodigo, CasillaVista.Formato.NORMAL);
         if(casilla.devuelveFicha != null){
-            casillaVista.confirmar(casilla.devuelveTipò());
+            casillaVista.confirmar(casilla.devuelveTipo());
         }
     }
     
@@ -103,17 +102,11 @@ public class TableroVista extends JPanel {
         for (int fila = 0; fila < DIMENSION; fila++) {
             for (int columna = 0; columna < DIMENSION; columna++) {
                 CasillaVista casillaVista = casillasVista[fila][columna];
-                casillaVista.ponerCodigo(casillas[fila][columna].devuelveCodigo);
-                bloqueaCasillas(casillaVista);
+                casillaVista.setEnabled(true);
+                casillaVista.ponerCodigo(casillas[fila][columna].devuelveCodigo());
                 pintaCasilla(casillaVista, casillas[fila][columna]);
             }
         }
     }
-    
-    
-    
-    
-    
-    
     
 }
