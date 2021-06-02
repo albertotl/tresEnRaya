@@ -52,6 +52,7 @@ public class TableroVista extends JPanel {
     
     public void ponerTablero(Tablero tablero){
         this.tablero = tablero;
+        iniciarTableroVista();
     }
     
     private CasillaVista buscarCasillaVista(String codigo){
@@ -90,7 +91,7 @@ public class TableroVista extends JPanel {
     } 
     
     public void pintaCasilla(CasillaVista casillaVista, Casilla casilla){
-        if(casilla.devuelveFicha != null){
+        if(casilla.devuelveTipo() != null){
             casillaVista.confirmar(casilla.devuelveTipo());
         }
     }

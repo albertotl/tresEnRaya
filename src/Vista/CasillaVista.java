@@ -20,11 +20,13 @@ public class CasillaVista extends JLabel {
     private boolean seleccionada = false;
     private boolean confirmada = false;
     private String codigo;
+    private String tipo = "";
     
     private ImageIcon imagen;
     
     public final static String CIRCULO = "O";
     public final static String CRUZ = "X";
+    public final static String VACIO = "";
     
     public enum Formato {DESTACADO, NORMAL};
     
@@ -70,41 +72,54 @@ public class CasillaVista extends JLabel {
         this.codigo = codigo;
     }
     
-    public void seleccionar(String turno){
-        if(turno.equals(CIRCULO)){
+    public void seleccionar(String turno) {
+        if (turno.equals(CIRCULO)) {
             imagen = new ImageIcon("img/O_GRIS.jpg");
             setIcon(imagen);
-        }else{
+        } else {
             imagen = new ImageIcon("img/X_GRIS.jpg");
             setIcon(imagen);
         }
-        seleccionada = true; 
+        seleccionada = true;
     }
     
     /**
     * Deja la casilla vacia
     */
-    public void deseleccionar(){
-        setIcon(new ImageIcon("img/BLANCO.jpg"));
+    public void deseleccionar() {
+        if (tipo != null) {
+            if (tipo.equals(VACIO)) {
+                setIcon(new ImageIcon("img/BLANCO.jpg"));
+            } else if (tipo.equals(CIRCULO)) {
+                setIcon(new ImageIcon("img/O_BLANCO.jpg"));
+            } else if (tipo.equals(CRUZ)) {
+                setIcon(new ImageIcon("img/X_BLANCO.jpg"));
+            }
+        }
         seleccionada = false;
     }
     
     /*
     * Confirma donde queda puesta la ficha
-    */
-    public void confirmar(String tipo){
-        if(tipo.equals(CIRCULO)){
-            setIcon(new ImageIcon("img/O_BLANCO.jpg"));
-            confirmada = true;
-        }else{
-            setIcon(new ImageIcon("img/X_BLANCO.jpg"));
-            confirmada = true;
+     */
+    public void confirmar(String tipo) {
+        this.tipo = tipo;
+        if (tipo != null) {
+            if (tipo.equals(CIRCULO)) {
+                setIcon(new ImageIcon("img/O_BLANCO.jpg"));
+                confirmada = true;
+            } else if (tipo.equals(CRUZ)) {
+                setIcon(new ImageIcon("img/X_BLANCO.jpg"));
+                confirmada = true;
+            }
+            seleccionada = false;
         }
-        seleccionada = false;
+
     }
 
     void iniciar() {
-        this.codigo = "";
+        this.codigo = VACIO;
+        this.tipo = VACIO;
         deseleccionar();
     }
 

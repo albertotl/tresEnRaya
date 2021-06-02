@@ -18,6 +18,9 @@ public class Juego {
     public static final String VERSION = "Tres en Raya 1.0";
     public static final String CIRCULO = "O";
     public static final String CRUZ = "X";
+    public static final String VACIO = "";
+    public static final String PONER_FICHA = "poner_ficha";
+    public static final String ACABAR_PARTIDA = "acabar_partida";
 
     private PropertyChangeSupport observadores;
     private Tablero tablero;
@@ -25,6 +28,7 @@ public class Juego {
 
     public Juego() {
         tablero = new Tablero();
+        observadores = new PropertyChangeSupport(this);
         Random r = new Random();
         int valor = r.nextInt(2);  // Entre 0 y 1.
 
@@ -62,6 +66,11 @@ public class Juego {
                 }
             }
         }
+        if(!verificarTablero().equals(VACIO)){
+            this.observadores.firePropertyChange(PONER_FICHA,
+                    null, verificarTablero());
+            
+        }
     }
 
     public String mostrarTablero() {
@@ -71,9 +80,9 @@ public class Juego {
             for (int j = 0; j < 3; j++) {
                 tipo = tablero.devolverTipoCasilla(i, j);
                 if (tipo == null) {
-                    tipo = "-";
+                    tipo = " - ";
                 }
-                cadena = cadena + " | " + tipo + " | ";
+                cadena = cadena + " |  " + tipo + "  | ";
             }
             cadena = cadena + "\n";
         }
@@ -196,7 +205,7 @@ public class Juego {
             return diagonal2;
         }
 
-        return "";
+        return VACIO;
     }
     
     public boolean completo(){
@@ -207,9 +216,17 @@ public class Juego {
     }
     
     /*
-    * Añade un observador a la oficina
+    * Añade un observador al juego
     */
     public void nuevoObservador(PropertyChangeListener observador){
         this.observadores.addPropertyChangeListener(observador);
+    }
+    
+    public void acabarPartida(String resultado){
+        // Enviar resultado a servidor
+        this.tablero.vaciar();
+         this.observadores.firePropertyChange(ACABAR_PARTIDA,
+                    null, null);
+        
     }
 }

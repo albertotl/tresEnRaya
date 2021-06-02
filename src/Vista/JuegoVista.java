@@ -10,7 +10,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import javax.swing.*;
 
 /**
@@ -37,11 +36,15 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     private static final String ESTADO_CONECTADO = "Conectado";
     private static final String ESTADO_DESCONECTADO = "Desconectado";
     private static final String PONER_FICHA = "Poner ficha";
+    private static final String ACABAR_PARTIDA = "Acabar_Partida";
+    private static final String NUEVA_PARTIDA = "Nueva partida";
+    private static final String VACIO = "";
     private static final String SALIR = "Salir";
     private static final String AYUDA = "Ayuda";
     
     private JuegoVista(OyenteVista oyenteVista, Juego juego){
         this.tableroVista = new TableroVista(this, true);
+        juego.nuevoObservador(this);
         this.oyenteVista = oyenteVista;
         this.juego = juego;
         crearVentana();
@@ -50,7 +53,7 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     private void crearVentana() {
         //String idUsuario = juego.obtenerIdUsuario();
         ventana = new JFrame(Juego.VERSION);
-
+        
         /*
       * Captura windowsClosing y produce el evento Salir
          */
@@ -143,12 +146,12 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         botonConfirmar = crearBoton(PONER_FICHA);
         panel.add(botonConfirmar);
         botonConfirmar.setEnabled(false);
-        botonSalir = crearBoton(SALIR);
+        botonSalir = crearBoton(ACABAR_PARTIDA);
         panel.add(botonSalir);
     }
     
     private void crearPanelJugadas(JPanel panel){
-        texto = new JTextArea(16,12);
+        texto = new JTextArea(16,13);
         texto.setLineWrap(true);
         texto.setEditable(false);
         JScrollPane scroll = new JScrollPane(texto);
@@ -170,20 +173,35 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
             case PONER_FICHA:
                 oyenteVista.eventoProducido(OyenteVista.Evento.PONER_FICHA,
                         codigoCasillaSeleccionada);
+                mostrarTextoJugada(juego.mostrarTablero());
                 tableroVista.ponerCasillas();
                 break;
                 
-            case SALIR:
-                
+            case ACABAR_PARTIDA:
+                oyenteVista.eventoProducido(OyenteVista.Evento.ACABAR_PARTIDA, VACIO);
                 break;
         }
     }
+    private void mostrarMensaje(String mensaje){
+     JOptionPane.showMessageDialog(ventana, mensaje, 
+        Juego.VERSION, 
+        JOptionPane.INFORMATION_MESSAGE);
+  }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (evt.getPropertyName().equals(juego.PONER_FICHA)) {
+            String ganador = (String) evt.getNewValue();
+            mostrarTextoJugada(ganador);
+            mostrarMensaje(ganador);
+            oyenteVista.eventoProducido(OyenteVista.Evento.ACABAR_PARTIDA, ganador);
+        }else if(evt.getPropertyName().equals(juego.ACABAR_PARTIDA)){
+            tableroVista.ponerTablero(juego.devuelveTablero());
+            tableroVista.ponerCasillas();
+            historialJugadas = VACIO;
+            mostrarMensaje(NUEVA_PARTIDA);
+        }
     }
-    
     /*
      * Activa el boton de asignar
     */

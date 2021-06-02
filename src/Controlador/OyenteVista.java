@@ -10,7 +10,7 @@ package Controlador;
  * @author Alberto
  */
 public interface OyenteVista {
-    public enum Evento {PONER_FICHA, SALIR};
+    public enum Evento {PONER_FICHA, ACABAR_PARTIDA, SALIR};
     
     public void eventoProducido(Evento evento, Object obj);
 }

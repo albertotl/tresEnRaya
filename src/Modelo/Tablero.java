@@ -104,4 +104,12 @@ public final class Tablero {
         }
         return true;
     }
+    
+    public void vaciar(){
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
+                casillas[i][j].vaciar();
+            }
+        }
+    }
 }
