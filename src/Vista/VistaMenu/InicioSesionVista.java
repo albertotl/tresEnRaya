@@ -21,18 +21,30 @@ public class InicioSesionVista extends JFrame implements PropertyChangeListener 
     private static final String MENSAJE_ERROR = "Creedenciales "
             + "introducidas incorrectas";
     private OyenteVista oyenteVista;
+    private static InicioSesionVista instancia;
     private static final String ERROR = Juego.ERROR;
     private Juego juego;
     /**
      * Creates new form InicioSesion
      */
-    public InicioSesionVista(OyenteVista oyenteVista, Juego juego) {
+    private InicioSesionVista(OyenteVista oyenteVista, Juego juego) {
         initComponents();
         this.juego = juego;
         juego.nuevoObservador(this);
         this.oyenteVista = oyenteVista;
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+    }
+    
+    /*
+    * Patron singleton
+    */
+    public static synchronized InicioSesionVista
+            instancia(OyenteVista oyenteIU, Juego juego) {
+        if (instancia == null) {
+            instancia = new InicioSesionVista(oyenteIU, juego);
+        }
+        return instancia;
     }
     
     
@@ -139,7 +151,7 @@ public class InicioSesionVista extends JFrame implements PropertyChangeListener 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        RegistroVista registro = new RegistroVista(oyenteVista, juego);
+        RegistroVista registro = RegistroVista.instancia(oyenteVista, juego);
         registro.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed

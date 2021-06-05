@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 public class RegistroVista extends JFrame implements PropertyChangeListener{
     
     private OyenteVista oyenteVista;
+    private static RegistroVista instancia;
     private Juego juego;
     
     private static final String MENSAJE_EXITO = "Usuario registrado"
@@ -30,13 +31,25 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
     /**
      * Creates new form RegistroVista
      */
-    public RegistroVista(OyenteVista oyenteVista, Juego juego) {
+    private RegistroVista(OyenteVista oyenteVista, Juego juego) {
         this.oyenteVista = oyenteVista;
         this.juego = juego;
         juego.nuevoObservador(this);
         initComponents();
         this.setLocationRelativeTo(null);
     }
+    
+    /*
+    * Patron singleton
+    */
+    public static synchronized RegistroVista
+            instancia(OyenteVista oyenteIU, Juego juego) {
+        if (instancia == null) {
+            instancia = new RegistroVista(oyenteIU, juego);
+        }
+        return instancia;
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -148,7 +161,9 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        
+        InicioSesionVista inicioSesion = InicioSesionVista.instancia(oyenteVista, juego);
+        inicioSesion.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -175,7 +190,7 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
             if(exito){
                 JOptionPane.showMessageDialog(this, MENSAJE_EXITO,
                     Juego.VERSION, JOptionPane.INFORMATION_MESSAGE);
-                InicioSesionVista inicioSesion = new InicioSesionVista(oyenteVista, juego);
+                InicioSesionVista inicioSesion = InicioSesionVista.instancia(oyenteVista, juego);
                 inicioSesion.setVisible(true);
                 this.setVisible(false);
             }else{

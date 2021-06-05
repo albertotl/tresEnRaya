@@ -18,7 +18,7 @@ public class tresEnRaya implements OyenteVista{
     public tresEnRaya(){
         juego = new Juego();
         //vista = JuegoVista.instancia(this, juego);
-        vista = new InicioSesionVista(this, juego);
+        vista = InicioSesionVista.instancia(this, juego);
     }
     
     public void eventoProducido(Evento evento, Object obj){
