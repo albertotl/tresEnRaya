@@ -19,12 +19,24 @@ public class Juego {
     public static final String CIRCULO = "O";
     public static final String CRUZ = "X";
     public static final String VACIO = "";
-    public static final String PONER_FICHA = "poner_ficha";
+    public static final String ERROR = "Error---";
+    public static final String GANADOR = "poner_ficha";
+    public static final String REGISTRARSE = "registrarse";
+    public static final String ENCUENTRA_PARTIDA = "encuentra_partida";
     public static final String ACABAR_PARTIDA = "acabar_partida";
+    public static final String INICIAR_SESION = "iniciar_sesion";
 
     private PropertyChangeSupport observadores;
     private Tablero tablero;
+    
+    //private String ficha;  //Tipo de ficha que asiganara el servidor para una partida
+    //private boolean turno; //Si el cliente tiene o no el turno de jugada
+    
     private String turno;
+    private boolean conectado;
+    private String usuario;
+    private String contrincante;
+    private String historial;
 
     public Juego() {
         tablero = new Tablero();
@@ -45,6 +57,13 @@ public class Juego {
     
     public String devuelveTurno(){
         return turno;
+    }
+    
+    public String devuelveUsuario(){
+        return usuario;
+    }
+    public String devuelveHistorial(){
+        return historial;
     }
 
     /*
@@ -67,7 +86,7 @@ public class Juego {
             }
         }
         if(!verificarTablero().equals(VACIO)){
-            this.observadores.firePropertyChange(PONER_FICHA,
+            this.observadores.firePropertyChange(GANADOR,
                     null, verificarTablero());
             
         }
@@ -222,11 +241,68 @@ public class Juego {
         this.observadores.addPropertyChangeListener(observador);
     }
     
-    public void acabarPartida(String resultado){
+    public void acabarPartida(){
         // Enviar resultado a servidor
         this.tablero.vaciar();
          this.observadores.firePropertyChange(ACABAR_PARTIDA,
                     null, null);
         
+    }
+    
+    public void solicitarUsuario(){
+        usuario = "hola";
+    }
+    
+    public void solicitarHistorial(){
+        historial = "dsfsd";
+    }
+    
+    public void iniciarSesion(String usuario, String contraseña){
+        
+        //Proceso de inicio de sesion con el servidor
+        solicitarUsuario();
+        solicitarHistorial();
+        conectado = true;
+        if(conectado){
+            if(!historial.equals("null")){
+                Tupla tupla = new Tupla<>(this.usuario, this.historial);
+                this.observadores.firePropertyChange(INICIAR_SESION,
+                    null, tupla);
+            }else{
+                 Tupla tupla = new Tupla<>(this.usuario, VACIO);
+                 this.observadores.firePropertyChange(INICIAR_SESION,
+                    null, tupla);
+            }
+        }else{
+            Tupla tupla = new Tupla<>(ERROR, VACIO);
+            this.observadores.firePropertyChange(INICIAR_SESION,
+                    null, tupla);
+        }
+    }
+    
+    public void registrar(String usuario, String contrasena){
+        conectado = true;
+        if(conectado){
+            // Solicitud de registro al servidor
+            
+            boolean exito = true;
+            this.observadores.firePropertyChange(REGISTRARSE,
+                    null, exito);
+        }
+    }
+    
+    private void solicitudServidorPonerFicha(){
+        
+    } 
+    
+    public void buscarPartida(){
+        
+        boolean exito = true;
+        
+        if(exito){
+            Tupla tupla = new Tupla<>(contrincante, turno);
+             this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
+                    null, contrincante);
+        }
     }
 }

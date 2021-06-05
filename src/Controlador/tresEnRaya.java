@@ -1,8 +1,9 @@
 
 package Controlador;
 
-import Modelo.Juego;
+import Modelo.*;
 import Vista.*;
+import Vista.VistaMenu.InicioSesionVista;
 import java.io.IOException;
 
 /**
@@ -12,11 +13,12 @@ import java.io.IOException;
 public class tresEnRaya implements OyenteVista{
     
     private Juego juego;
-    private JuegoVista vista;
+    private InicioSesionVista vista;
     
     public tresEnRaya(){
         juego = new Juego();
-        vista = JuegoVista.instancia(this, juego);
+        //vista = JuegoVista.instancia(this, juego);
+        vista = new InicioSesionVista(this, juego);
     }
     
     public void eventoProducido(Evento evento, Object obj){
@@ -26,11 +28,25 @@ public class tresEnRaya implements OyenteVista{
                 break;
                 
             case ACABAR_PARTIDA:
-                juego.acabarPartida(String.valueOf(obj));
+                juego.acabarPartida();
+                break;
+            
+            case INICIAR_SESION:
+                Tupla<String, String> tupla = (Tupla<String, String>)obj;
+                juego.iniciarSesion(tupla.a, tupla.b);
+                break;
+                
+            case REGISTRARSE:
+                Tupla<String, String> tupla2 = (Tupla<String, String>)obj;
+                juego.registrar(tupla2.a, tupla2.b);
                 break;
             
             case SALIR:
                 System.exit(0);
+                break;
+            
+            case BUSCAR_PARTIDA:
+                juego.buscarPartida();
                 break;
         }
     }

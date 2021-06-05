@@ -120,6 +120,8 @@ public class CasillaVista extends JLabel {
     void iniciar() {
         this.codigo = VACIO;
         this.tipo = VACIO;
+        this.confirmada = false;
+        this.seleccionada = false;
         deseleccionar();
     }
 

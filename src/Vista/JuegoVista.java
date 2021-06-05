@@ -3,6 +3,7 @@ package Vista;
 
 import Controlador.OyenteVista;
 import Modelo.*;
+import Vista.VistaMenu.InicioVista;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,24 +26,30 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     private static JuegoVista instancia = null;
     private JFrame ventana;
     private JLabel etiquetaConectado;
+    private JLabel etiquetaContrincante;
     private JButton botonConfirmar;
     private JButton botonSalir;
     private JButton botonAyuda;
     private TableroVista tableroVista; 
     private JTextArea texto;
     private String historialJugadas = "";
+    private String contrincante = "";
     private CasillaVista casillaVistaSeleccionada;
     
     private static final String ESTADO_CONECTADO = "Conectado";
     private static final String ESTADO_DESCONECTADO = "Desconectado";
     private static final String PONER_FICHA = "Poner ficha";
     private static final String ACABAR_PARTIDA = "Acabar_Partida";
-    private static final String NUEVA_PARTIDA = "Nueva partida";
     private static final String VACIO = "";
     private static final String SALIR = "Salir";
     private static final String AYUDA = "Ayuda";
+    private static final String TEXTO_AYUDA = "Introduzca una "
+            + "ficha en una casilla intentando juntar 3 fichas\n   "
+            + "      iguales "
+            + "en la misma fila, columna o diagonal.\n       "
+            + "                            Turno de:  ";
     
-    private JuegoVista(OyenteVista oyenteVista, Juego juego){
+   private JuegoVista(OyenteVista oyenteVista, Juego juego){
         this.tableroVista = new TableroVista(this, true);
         juego.nuevoObservador(this);
         this.oyenteVista = oyenteVista;
@@ -95,8 +102,12 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         ventana.setLocationRelativeTo(null); 
     }
     
+    public void visualizarVentana(){
+        ventana.setVisible(true);
+    }
+    
     /**
-    * Devuelve la unica instancia posible de VentaBilletesVista
+    * Devuelve la unica instancia posible de JuegoVista
     * (patrón singleton)
     */        
     public static synchronized JuegoVista
@@ -121,6 +132,10 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     private void crearBarraHerramientas(JPanel panel){
         JToolBar barra = new JToolBar();
         barra.setFloatable(false);
+        
+        etiquetaContrincante = new JLabel(contrincante);
+        etiquetaContrincante.setEnabled(false);
+        panel.add(etiquetaContrincante);
         
         botonAyuda = crearBoton(AYUDA);
         barra.add(botonAyuda);
@@ -162,6 +177,31 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
             historialJugadas = historialJugadas  + jugada + "\n";
             texto.setText(historialJugadas);
     }
+    
+    public void seleccionarCasillaVista(CasillaVista casillaVista) {
+        if (casillaVistaSeleccionada != null) {
+            casillaVistaSeleccionada.deseleccionar();
+        }
+
+        this.casillaVistaSeleccionada = casillaVista;
+        this.codigoCasillaSeleccionada = casillaVista.obtenerCodigo();
+        
+        if (codigoCasillaSeleccionada != null) {
+            casillaVistaSeleccionada.seleccionar(juego.devuelveTurno());
+            if (casillaVistaSeleccionada.estaSeleccionada()) {
+                if (casillaVistaSeleccionada.estaConfirmada()) {
+                    if (juego.completo()) {
+                        System.out.println("completo");
+                        activarBotonConfirmar(true);
+                    }else{
+                        activarBotonConfirmar(false);
+                    }
+                } else {
+                    activarBotonConfirmar(true);
+                }
+            }
+        }
+    }
   
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -177,6 +217,10 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
                 tableroVista.ponerCasillas();
                 break;
                 
+            case AYUDA:
+                mostrarMensaje(TEXTO_AYUDA + juego.devuelveTurno());
+                break;
+                
             case ACABAR_PARTIDA:
                 oyenteVista.eventoProducido(OyenteVista.Evento.ACABAR_PARTIDA, VACIO);
                 break;
@@ -186,20 +230,21 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
      JOptionPane.showMessageDialog(ventana, mensaje, 
         Juego.VERSION, 
         JOptionPane.INFORMATION_MESSAGE);
-  }
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(juego.PONER_FICHA)) {
+        if (evt.getPropertyName().equals(juego.GANADOR)) {
             String ganador = (String) evt.getNewValue();
             mostrarTextoJugada(ganador);
             mostrarMensaje(ganador);
-            oyenteVista.eventoProducido(OyenteVista.Evento.ACABAR_PARTIDA, ganador);
+            oyenteVista.eventoProducido(OyenteVista.Evento.ACABAR_PARTIDA, null);
         }else if(evt.getPropertyName().equals(juego.ACABAR_PARTIDA)){
-            tableroVista.ponerTablero(juego.devuelveTablero());
-            tableroVista.ponerCasillas();
             historialJugadas = VACIO;
-            mostrarMensaje(NUEVA_PARTIDA);
+            InicioVista inicio = InicioVista.instancia(oyenteVista, juego);
+            inicio.setVisible(true);
+            ventana.setVisible(false);
+            
         }
     }
     /*
@@ -208,28 +253,4 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     private void activarBotonConfirmar(boolean activar){
         botonConfirmar.setEnabled(activar);
     }
-
-    public void seleccionarCasillaVista(CasillaVista casillaVista) {
-        if (casillaVistaSeleccionada != null) {
-            casillaVistaSeleccionada.deseleccionar();
-        }
-
-        this.casillaVistaSeleccionada = casillaVista;
-        this.codigoCasillaSeleccionada = casillaVista.obtenerCodigo();
-        
-        if (codigoCasillaSeleccionada != null) {
-            casillaVistaSeleccionada.seleccionar(juego.devuelveTurno());
-            if (casillaVistaSeleccionada.estaSeleccionada()) {
-                if (casillaVistaSeleccionada.estaConfirmada()) {
-                    if (juego.completo()) {
-                        activarBotonConfirmar(true);
-                    }
-                    activarBotonConfirmar(false);
-                } else {
-                    activarBotonConfirmar(true);
-                }
-            }
-        }
-    }
-    
 }
