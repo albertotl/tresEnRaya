@@ -91,7 +91,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jTextArea1.setText(historial);&#xa;jTextArea1.setEditable(false);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="String informacion = &quot;&quot;;&#xa;for(String linea: historial){&#xa;    informacion = linea + SALTO + informacion;&#xa;     &#xa;}&#xa;jTextArea1.setText(informacion);&#xa;jTextArea1.setEditable(false);"/>
           </AuxValues>
         </Component>
       </SubComponents>

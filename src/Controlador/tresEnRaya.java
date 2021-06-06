@@ -2,9 +2,10 @@
 package Controlador;
 
 import Modelo.*;
-import Vista.*;
 import Vista.VistaMenu.InicioSesionVista;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,8 +18,9 @@ public class tresEnRaya implements OyenteVista{
     
     public tresEnRaya(){
         juego = new Juego();
-        //vista = JuegoVista.instancia(this, juego);
+        juego.conectar();
         vista = InicioSesionVista.instancia(this, juego);
+        juego.nuevoObservador(vista);
     }
     
     public void eventoProducido(Evento evento, Object obj){
@@ -33,8 +35,14 @@ public class tresEnRaya implements OyenteVista{
             
             case INICIAR_SESION:
                 Tupla<String, String> tupla = (Tupla<String, String>)obj;
-                juego.iniciarSesion(tupla.a, tupla.b);
+                try {
+                    juego.iniciarSesion(tupla.a, tupla.b);
+                } catch (IOException ex) {
+                    Logger.getLogger(tresEnRaya.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            
                 break;
+
                 
             case REGISTRARSE:
                 Tupla<String, String> tupla2 = (Tupla<String, String>)obj;

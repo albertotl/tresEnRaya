@@ -5,15 +5,22 @@
  */
 package Modelo;
 
+import Modelo.TresEnRayaEnLinea.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
  *
  * @author Alberto
  */
-public class Juego {
+public class Juego implements OyenteServidor {
     
     public static final String VERSION = "Tres en Raya 1.0";
     public static final String CIRCULO = "O";
@@ -25,30 +32,43 @@ public class Juego {
     public static final String ENCUENTRA_PARTIDA = "encuentra_partida";
     public static final String ACABAR_PARTIDA = "acabar_partida";
     public static final String INICIAR_SESION = "iniciar_sesion";
-
+    public static final String PROPIEDAD_CONECTADO = "Conectado";
+    public static final String SEPARADOR = "'";
+    
+    
+    public static final String ID_USUARIO = "idUsuario";
+    public static final String NOMBRE = "nombre";
+    public static final String URL_SERVIDOR = "URLServidor";
+    private String URLServidor = "localhost";
+    public static final String PUERTO_SERVIDOR = "puertoServidor";
+    private int puertoServidor = 25000;
+    public static final String ERROR_GUARDAR_CONFIGURACION = 
+            "No se ha guardado la configuracion";
+    
+    private Cliente cliente;
+    private OyenteServidor oyenteServidor;
     private PropertyChangeSupport observadores;
     private Tablero tablero;
     
     //private String ficha;  //Tipo de ficha que asiganara el servidor para una partida
     //private boolean turno; //Si el cliente tiene o no el turno de jugada
     
-    private String turno;
+    
     private boolean conectado;
-    private String usuario;
+    private String idConexion;
+    
+    private String turno;
+    private String usuario = "Alberto";
     private String contrincante;
-    private String historial;
+    private List<String> historial;
 
     public Juego() {
         tablero = new Tablero();
+        oyenteServidor = this;
+        conectado = false;
         observadores = new PropertyChangeSupport(this);
-        Random r = new Random();
-        int valor = r.nextInt(2);  // Entre 0 y 1.
-
-        if (valor == 0) {
-            turno = CIRCULO;
-        } else {
-            turno = CRUZ;
-        }
+        
+        cliente = new Cliente(URLServidor, puertoServidor);
     }
     
     public Tablero devuelveTablero(){
@@ -62,8 +82,79 @@ public class Juego {
     public String devuelveUsuario(){
         return usuario;
     }
-    public String devuelveHistorial(){
+    public List<String> devuelveHistorial(){
         return historial;
+    }
+    
+    public boolean estaConectado(){
+        return conectado;
+    }
+    
+    /*
+    * Obtiene identificacion de conexion
+    */
+    public String obtenerIdConexion(){
+        return conectado ? idConexion : "---";
+    }
+    
+    /*
+    * Conecta con el servidor mediante long polling
+    */
+    public void conectar(){
+        new Thread(){
+            public void run(){
+                Cliente cliente = new Cliente(
+                        URLServidor, puertoServidor);
+                
+                while(true){
+                    try{
+                        cliente.enviarSolicitudLongPolling(
+                                PrimitivaComunicacion.CONECTAR_PUSH, 
+                                cliente.TIEMPO_ESPERA_LARGA_ENCUESTA,
+                                oyenteServidor);
+                        
+                    } catch(Exception e){
+                        conectado = false;
+                        observadores.firePropertyChange(
+                                PROPIEDAD_CONECTADO, null, conectado);
+                        // Se reintenta la conexión
+                        try {
+                          sleep(
+                            cliente.TIEMPO_REINTENTO_CONEXION_SERVIDOR);
+                        } catch (InterruptedException e2){
+                            // Propagamos a la máquina virtual
+                            new RuntimeException();
+                        }
+                    }
+                }
+            }
+        }.start();
+    }
+    
+    /*
+    * Desconecta del servidor
+    */
+    public void desconectar() throws Exception{
+        if(! conectado){
+            return;
+        }
+        cliente.enviarSolicitud(PrimitivaComunicacion.DESCONECTAR_PUSH,
+                Cliente.TIEMPO_ESPERA_SERVIDOR, idConexion);
+    }
+    
+    /*
+    * Recibe solicitud del servidor de nuevo idConexion
+    */
+    private boolean solicitudServidorNuevoIdConexion(
+            List<String> resultados) throws IOException{
+        idConexion = resultados.get(0);
+        if(idConexion == null){
+            return false;
+        }
+        conectado = true;
+        observadores.firePropertyChange(
+                PROPIEDAD_CONECTADO, null, conectado);
+        return true;
     }
 
     /*
@@ -253,30 +344,50 @@ public class Juego {
         usuario = "hola";
     }
     
-    public void solicitarHistorial(){
-        historial = "dsfsd";
+    /*
+    * Cifra la contraseña con SHA-256 para enviarla segura hasta el servidor
+    */
+    private String cifrarContrasena(String contrasena){
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+        byte[] hash = md.digest(contrasena.getBytes());
+        StringBuffer contrasenaCifrada = new StringBuffer();
+        for (byte b : hash) {
+            contrasenaCifrada.append(String.format("%02x", b));
+        }
+        return contrasenaCifrada.toString();
     }
     
-    public void iniciarSesion(String usuario, String contraseña){
+    public void iniciarSesion(String usuario, String contrasena) throws IOException{
         
-        //Proceso de inicio de sesion con el servidor
-        solicitarUsuario();
-        solicitarHistorial();
-        conectado = true;
         if(conectado){
-            if(!historial.equals("null")){
+            //Se cifra la contraseña antes de enviarla
+            String contrasenaCifrada = cifrarContrasena(contrasena);
+            if(contrasenaCifrada != null){
+                historial = new ArrayList<>();
+                String credenciales = idConexion + SEPARADOR +
+                        usuario + SEPARADOR + contrasenaCifrada;
+                cliente.enviarSolicitud(PrimitivaComunicacion.INICIAR_SESION,
+                        Cliente.TIEMPO_ESPERA_SERVIDOR,
+                        credenciales, historial);
+                
+                
+            }
+            
+            if(historial.isEmpty()){
+                Tupla tupla = new Tupla<>(this.usuario, VACIO);
+                this.observadores.firePropertyChange(INICIAR_SESION,
+                        null, tupla);
+            }else{
                 Tupla tupla = new Tupla<>(this.usuario, this.historial);
                 this.observadores.firePropertyChange(INICIAR_SESION,
-                    null, tupla);
-            }else{
-                 Tupla tupla = new Tupla<>(this.usuario, VACIO);
-                 this.observadores.firePropertyChange(INICIAR_SESION,
-                    null, tupla);
+                        null, tupla);
             }
-        }else{
-            Tupla tupla = new Tupla<>(ERROR, VACIO);
-            this.observadores.firePropertyChange(INICIAR_SESION,
-                    null, tupla);
         }
     }
     
@@ -303,6 +414,21 @@ public class Juego {
             Tupla tupla = new Tupla<>(contrincante, turno);
              this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
                     null, contrincante);
+        }
+    }
+
+    @Override
+    public boolean solicitudServidorProducida(PrimitivaComunicacion solicitud,
+            List<String> resultados) throws IOException {
+        if(resultados.isEmpty()){
+            return false;
+        }
+        switch(solicitud){
+            case NUEVO_ID_CONEXION:
+                return solicitudServidorNuevoIdConexion(resultados);
+            
+            default:
+                return false;
         }
     }
 }

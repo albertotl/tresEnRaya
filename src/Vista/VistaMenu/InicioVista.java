@@ -5,6 +5,8 @@ import Controlador.OyenteVista;
 import Modelo.*;
 import Vista.JuegoVista;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 /**
@@ -14,12 +16,14 @@ import javax.swing.JOptionPane;
 public class InicioVista extends JFrame implements PropertyChangeListener{
     
     private String usuario;
-    private String historial;
+    private List<String> historial;
     private Juego juego;
     private OyenteVista oyenteVista;
     private static InicioVista instancia;
     
     private static final String NUEVA_PARTIDA = "Nueva partida";
+    private static final String SALTO = "\n---------------------------"
+            + "----------------------------------------------------\n";
     private static final String VACIO = "";
     /**
      * Creates new form InicioVista
@@ -27,6 +31,7 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
     private InicioVista(OyenteVista oyenteVista, Juego juego) {
         this.oyenteVista = oyenteVista;
         this.juego = juego;
+        historial = new ArrayList<>();
         ponerDatos();
         juego.nuevoObservador(this);
         initComponents();
@@ -46,12 +51,9 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
     
     private void ponerDatos(){
         String usuario = juego.devuelveUsuario();
-        String historial = juego.devuelveHistorial();
+        historial = juego.devuelveHistorial();
         if(usuario != null){
-            this.usuario = juego.devuelveUsuario();
-        }
-        if(historial != null){
-             this.historial = juego.devuelveHistorial();
+            this.usuario = usuario;
         }
     }
     
@@ -83,7 +85,12 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
-        jTextArea1.setText(historial);
+        String informacion = "";
+        for(String linea: historial){
+            informacion = linea + SALTO + informacion;
+
+        }
+        jTextArea1.setText(informacion);
         jTextArea1.setEditable(false);
         jScrollPane1.setViewportView(jTextArea1);
 
