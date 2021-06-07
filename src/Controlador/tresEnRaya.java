@@ -38,7 +38,7 @@ public class tresEnRaya implements OyenteVista{
                 try {
                     juego.iniciarSesion(tupla.a, tupla.b);
                 } catch (IOException ex) {
-                    Logger.getLogger(tresEnRaya.class.getName()).log(Level.SEVERE, null, ex);
+                    
                 }
             
                 break;
@@ -46,8 +46,15 @@ public class tresEnRaya implements OyenteVista{
                 
             case REGISTRARSE:
                 Tupla<String, String> tupla2 = (Tupla<String, String>)obj;
-                juego.registrar(tupla2.a, tupla2.b);
+            {
+                try {
+                    juego.registrar(tupla2.a, tupla2.b);
+                } catch (IOException ex) {
+                    
+                }
+            }
                 break;
+
             
             case SALIR:
                 System.exit(0);

@@ -190,7 +190,7 @@ public class InicioSesionVista extends JFrame implements PropertyChangeListener 
             
             if(datos.a.equals(ERROR)){
                 JOptionPane.showMessageDialog(this, MENSAJE_ERROR, 
-                Juego.VERSION, JOptionPane.INFORMATION_MESSAGE);
+                    Juego.VERSION, JOptionPane.INFORMATION_MESSAGE);
             }else{
                 InicioVista inicio = InicioVista.instancia(oyenteVista, juego);
                 inicio.setVisible(true);
@@ -198,8 +198,6 @@ public class InicioSesionVista extends JFrame implements PropertyChangeListener 
             }
         }
     }
-    
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

@@ -9,12 +9,14 @@ import Modelo.TresEnRayaEnLinea.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.io.StringReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  *
@@ -26,6 +28,7 @@ public class Juego implements OyenteServidor {
     public static final String CIRCULO = "O";
     public static final String CRUZ = "X";
     public static final String VACIO = "";
+    public static final String ERROR_CONEXION = "ERROR";
     public static final String ERROR = "Error---";
     public static final String GANADOR = "poner_ficha";
     public static final String REGISTRARSE = "registrarse";
@@ -105,7 +108,6 @@ public class Juego implements OyenteServidor {
             public void run(){
                 Cliente cliente = new Cliente(
                         URLServidor, puertoServidor);
-                
                 while(true){
                     try{
                         cliente.enviarSolicitudLongPolling(
@@ -204,10 +206,8 @@ public class Juego implements OyenteServidor {
      */
     public String verificarFilas() {
         boolean ganador = true;
-
         for (int i = 0; i < Tablero.DIMENSION; i++) {
             String tipo = tablero.devolverTipoCasilla(i, 0);
-
             if (tipo != null) {
                 for (int j = 0; j < Tablero.DIMENSION; j++) {
                     if (tipo != tablero.devolverTipoCasilla(i, j)) {
@@ -219,7 +219,6 @@ public class Juego implements OyenteServidor {
                 }
                 ganador = true;
             }
-
         }
         return null;
     }
@@ -229,10 +228,8 @@ public class Juego implements OyenteServidor {
      */
     public String verificarColumnas() {
         boolean ganador = true;
-
         for (int i = 0; i < Tablero.DIMENSION; i++) {
             String tipo = tablero.devolverTipoCasilla(0, i);
-
             if (tipo != null) {
                 for (int j = 0; j < Tablero.DIMENSION; j++) {
                     if (tipo != tablero.devolverTipoCasilla(j, i)) {
@@ -244,7 +241,6 @@ public class Juego implements OyenteServidor {
                 }
                 ganador = true;
             }
-
         }
         return null;
     }
@@ -254,7 +250,6 @@ public class Juego implements OyenteServidor {
      */
     public String verificarDiagonal1() {
         boolean ganador = true;
-
         String tipo = tablero.devolverTipoCasilla(0, 0);
         if (tipo != null) {
             for (int i = 1; i < Tablero.DIMENSION; i++) {
@@ -299,25 +294,24 @@ public class Juego implements OyenteServidor {
         if (filas != null) {
             return filas;
         }
-
         String columnas = verificarColumnas();
         if (columnas != null) {
             return columnas;
         }
-
         String diagonal1 = verificarDiagonal1();
         if (diagonal1 != null) {
             return diagonal1;
         }
-
         String diagonal2 = verificarDiagonal2();
         if (diagonal2 != null) {
             return diagonal2;
         }
-
         return VACIO;
     }
     
+    /*
+    * Devuelve verdadero si el tablero esta completo
+    */
     public boolean completo(){
         if(tablero != null){
             return tablero.completo();
@@ -332,6 +326,9 @@ public class Juego implements OyenteServidor {
         this.observadores.addPropertyChangeListener(observador);
     }
     
+    /*
+    * Envia el resultado al servidor y limpia el tablero
+    */
     public void acabarPartida(){
         // Enviar resultado a servidor
         this.tablero.vaciar();
@@ -340,12 +337,8 @@ public class Juego implements OyenteServidor {
         
     }
     
-    public void solicitarUsuario(){
-        usuario = "hola";
-    }
-    
     /*
-    * Cifra la contraseña con SHA-256 para enviarla segura hasta el servidor
+    * Cifra la contraseña con SHA-256 para enviarla hasta el servidor
     */
     private String cifrarContrasena(String contrasena){
         MessageDigest md = null;
@@ -363,40 +356,56 @@ public class Juego implements OyenteServidor {
         return contrasenaCifrada.toString();
     }
     
-    public void iniciarSesion(String usuario, String contrasena) throws IOException{
-        
-        if(conectado){
+    /*
+    * Hace una peticion al servidor de iniciar sesion 
+     */
+    public void iniciarSesion(String usuario, String contrasena)
+            throws IOException {
+        if (conectado) {
             //Se cifra la contraseña antes de enviarla
             String contrasenaCifrada = cifrarContrasena(contrasena);
-            if(contrasenaCifrada != null){
+            if (contrasenaCifrada != null) {
                 historial = new ArrayList<>();
-                String credenciales = idConexion + SEPARADOR +
-                        usuario + SEPARADOR + contrasenaCifrada;
+                String credenciales = idConexion + SEPARADOR
+                        + usuario + SEPARADOR + contrasenaCifrada;
                 cliente.enviarSolicitud(PrimitivaComunicacion.INICIAR_SESION,
                         Cliente.TIEMPO_ESPERA_SERVIDOR,
                         credenciales, historial);
-                
-                
-            }
-            
-            if(historial.isEmpty()){
-                Tupla tupla = new Tupla<>(this.usuario, VACIO);
-                this.observadores.firePropertyChange(INICIAR_SESION,
-                        null, tupla);
-            }else{
-                Tupla tupla = new Tupla<>(this.usuario, this.historial);
-                this.observadores.firePropertyChange(INICIAR_SESION,
-                        null, tupla);
+                if(historial.get(0).equals(ERROR_CONEXION)){
+                    Tupla tupla = new Tupla<>(ERROR, ERROR);
+                    this.observadores.firePropertyChange(INICIAR_SESION,
+                            null, tupla);
+                }else{
+                    if (historial.isEmpty()) {
+                        Tupla tupla = new Tupla<>(this.usuario, VACIO);
+                        this.observadores.firePropertyChange(INICIAR_SESION,
+                            null, tupla);
+                    }else{
+                        Tupla tupla = new Tupla<>(this.usuario, this.historial);
+                        this.observadores.firePropertyChange(INICIAR_SESION,
+                            null, tupla);
+                    }
+                }
             }
         }
     }
-    
-    public void registrar(String usuario, String contrasena){
-        conectado = true;
+
+
+    /*
+    * Hace una peticion al servidor para registrar un nuevo usuario
+    */
+    public void registrar(String usuario, String contrasena) 
+            throws IOException{
         if(conectado){
-            // Solicitud de registro al servidor
-            
-            boolean exito = true;
+            boolean exito = false;
+            String contrasenaCifrada = cifrarContrasena(contrasena);
+            String datos = usuario + SEPARADOR + contrasenaCifrada;
+            PrimitivaComunicacion respuesta = 
+                    cliente.enviarSolicitud(PrimitivaComunicacion.REGISTRARSE,
+                    Cliente.TIEMPO_ESPERA_SERVIDOR, datos);
+            if(respuesta == PrimitivaComunicacion.OK){
+                exito = true;
+            }
             this.observadores.firePropertyChange(REGISTRARSE,
                     null, exito);
         }
