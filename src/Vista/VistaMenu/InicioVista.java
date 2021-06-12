@@ -22,6 +22,8 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
     private static InicioVista instancia;
     
     private static final String NUEVA_PARTIDA = "Nueva partida";
+    private static final String ESPERANDO_ADVERSARIO = 
+            "Esperando adversario...";
     private static final String SALTO = "\n---------------------------"
             + "----------------------------------------------------\n";
     private static final String VACIO = "";
@@ -35,6 +37,7 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         ponerDatos();
         juego.nuevoObservador(this);
         initComponents();
+        jLabel3.setEnabled(false);
         this.setLocationRelativeTo(null);
     }
     
@@ -78,6 +81,7 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -110,6 +114,8 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
             }
         });
 
+        jLabel3.setText("Buscando partida..");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -131,6 +137,10 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 321, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(43, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(129, 129, 129))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -145,7 +155,9 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addContainerGap())
         );
 
         pack();
@@ -153,11 +165,6 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         oyenteVista.eventoProducido(OyenteVista.Evento.BUSCAR_PARTIDA, VACIO);
-        
-        mostrarMensaje(NUEVA_PARTIDA);
-        JuegoVista juegoVista =  JuegoVista.instancia(oyenteVista, juego);
-        juegoVista.visualizarVentana();
-        this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -176,13 +183,24 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        
-    }
-        
+        if (evt.getPropertyName().equals(Juego.ENCUENTRA_PARTIDA)) {
+            boolean exito = (boolean)evt.getNewValue();
+            if(exito){
+                mostrarMensaje(NUEVA_PARTIDA);
+                JuegoVista juegoVista =  JuegoVista.instancia(oyenteVista, juego);
+                juegoVista.visualizarVentana();
+                this.setVisible(false);
+            }else{
+                mostrarMensaje(ESPERANDO_ADVERSARIO);
+                jLabel3.setEnabled(true);
+            }
+        }
+    }    
 }

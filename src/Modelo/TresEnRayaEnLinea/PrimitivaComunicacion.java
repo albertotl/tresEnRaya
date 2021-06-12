@@ -21,6 +21,7 @@ public enum PrimitivaComunicacion {
   BUSCAR_PARTIDA("search_game"),
   ACABAR_PARTIDA("finish_game"),
   OBTENER_TABLERO("get_board"),
+  PARTIDA_ENCONTRADA("find_game"),
   FIN("end"),
   OK("ok"),
   NOK("nok");
@@ -37,6 +38,7 @@ public enum PrimitivaComunicacion {
                            INICIAR_SESION.toString() + "|"+
                            OBTENER_TABLERO.toString() + "|"+
                            TEST.toString() + "|"+
+                           PARTIDA_ENCONTRADA.toString() + "|" +
                            FIN.toString() + "|" +               
                            OK.toString() + "|" +
                            NOK.toString());
@@ -84,6 +86,9 @@ public enum PrimitivaComunicacion {
     }
     else if (token.equals(ACABAR_PARTIDA.toString())) {
       return ACABAR_PARTIDA;    
+    }
+    else if (token.equals(PARTIDA_ENCONTRADA.toString())) {
+      return PARTIDA_ENCONTRADA;    
     } 
     else if (token.equals(FIN.toString())) {
       return FIN;    

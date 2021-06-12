@@ -12,11 +12,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 
 /**
  *
@@ -59,10 +56,11 @@ public class Juego implements OyenteServidor {
     
     private boolean conectado;
     private String idConexion;
-    
-    private String turno;
-    private String usuario = "Alberto";
+    private String idJuego;
+    private String idUsuario;
     private String contrincante;
+    private String turno;
+    
     private List<String> historial;
 
     public Juego() {
@@ -83,7 +81,7 @@ public class Juego implements OyenteServidor {
     }
     
     public String devuelveUsuario(){
-        return usuario;
+        return idUsuario;
     }
     public List<String> devuelveHistorial(){
         return historial;
@@ -376,12 +374,13 @@ public class Juego implements OyenteServidor {
                     this.observadores.firePropertyChange(INICIAR_SESION,
                             null, tupla);
                 }else{
+                    idUsuario = usuario;
                     if (historial.isEmpty()) {
-                        Tupla tupla = new Tupla<>(this.usuario, VACIO);
+                        Tupla tupla = new Tupla<>(this.idUsuario, VACIO);
                         this.observadores.firePropertyChange(INICIAR_SESION,
                             null, tupla);
                     }else{
-                        Tupla tupla = new Tupla<>(this.usuario, this.historial);
+                        Tupla tupla = new Tupla<>(this.idUsuario, this.historial);
                         this.observadores.firePropertyChange(INICIAR_SESION,
                             null, tupla);
                     }
@@ -389,10 +388,8 @@ public class Juego implements OyenteServidor {
             }
         }
     }
-
-
     /*
-    * Hace una peticion al servidor para registrar un nuevo usuario
+    * Hace una peticion al servidor para registrar un nuevo idUsuario
     */
     public void registrar(String usuario, String contrasena) 
             throws IOException{
@@ -415,14 +412,23 @@ public class Juego implements OyenteServidor {
         
     } 
     
-    public void buscarPartida(){
-        
-        boolean exito = true;
-        
-        if(exito){
-            Tupla tupla = new Tupla<>(contrincante, turno);
-             this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
-                    null, contrincante);
+    public void buscarPartida() throws IOException{
+        if(conectado){
+            boolean exito = false;
+            String datos = idUsuario + SEPARADOR + idConexion;
+            List<String> resultados = new ArrayList<>();
+            cliente.enviarSolicitud(PrimitivaComunicacion.BUSCAR_PARTIDA, Cliente.TIEMPO_ESPERA_SERVIDOR, datos, resultados);
+            if(!resultados.isEmpty()){
+                exito = true;
+                idJuego = resultados.get(0);
+                contrincante = resultados.get(1);
+            }
+           
+            
+            
+            this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
+                    null, exito);
+            
         }
     }
 
@@ -436,6 +442,9 @@ public class Juego implements OyenteServidor {
             case NUEVO_ID_CONEXION:
                 return solicitudServidorNuevoIdConexion(resultados);
             
+            case PARTIDA_ENCONTRADA:
+                this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
+                    null, true);
             default:
                 return false;
         }
