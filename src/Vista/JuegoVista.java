@@ -20,12 +20,10 @@ import javax.swing.*;
 public class JuegoVista implements ActionListener, PropertyChangeListener{
     private OyenteVista oyenteVista;
     private Juego juego;
-    private boolean conectado;
     private String codigoCasillaSeleccionada;
     
     private static JuegoVista instancia = null;
     private JFrame ventana;
-    private JLabel etiquetaConectado;
     private JLabel etiquetaContrincante;
     private JButton botonConfirmar;
     private JButton botonSalir;
@@ -36,11 +34,12 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     private String contrincante = "";
     private CasillaVista casillaVistaSeleccionada;
     
-    private static final String ESTADO_CONECTADO = "Conectado";
-    private static final String ESTADO_DESCONECTADO = "Desconectado";
     private static final String PONER_FICHA = "Poner ficha";
-    private static final String ACABAR_PARTIDA = "Acabar_Partida";
+    private static final String ABANDONAR_PARTIDA = "Abandonar partida";
+    private static final String CONTRINCANTE = "Contrincante: ";
     private static final String VACIO = "";
+    private static final String GANADOR = "Has ganado la partida!";
+    private static final String PERDEDOR = "Has perdido la partida..";
     private static final String SALIR = "Salir";
     private static final String AYUDA = "Ayuda";
     private static final String TEXTO_AYUDA = "Introduzca una "
@@ -55,6 +54,8 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         this.oyenteVista = oyenteVista;
         this.juego = juego;
         crearVentana();
+        contrincante = juego.devuelveContrincante();
+        etiquetaContrincante.setText(CONTRINCANTE + contrincante);
     }
     
     private void crearVentana() {
@@ -73,7 +74,6 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
                 }
             }
         });
-        
         ventana.getContentPane().setLayout(new BorderLayout());
         JPanel panelNorte = new JPanel();
         panelNorte.setLayout(new FlowLayout());
@@ -134,7 +134,7 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         barra.setFloatable(false);
         
         etiquetaContrincante = new JLabel(contrincante);
-        etiquetaContrincante.setEnabled(false);
+        etiquetaContrincante.setEnabled(true);
         panel.add(etiquetaContrincante);
         
         botonAyuda = crearBoton(AYUDA);
@@ -142,9 +142,6 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         botonAyuda.setEnabled(true);
         barra.add(new JToolBar.Separator());
         
-        etiquetaConectado = new JLabel(ESTADO_DESCONECTADO);
-        etiquetaConectado.setEnabled(false);
-        panel.add(etiquetaConectado);
         panel.add(barra);
     }
     
@@ -161,7 +158,7 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         botonConfirmar = crearBoton(PONER_FICHA);
         panel.add(botonConfirmar);
         botonConfirmar.setEnabled(false);
-        botonSalir = crearBoton(ACABAR_PARTIDA);
+        botonSalir = crearBoton(ABANDONAR_PARTIDA);
         panel.add(botonSalir);
     }
     
@@ -182,22 +179,21 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         if (casillaVistaSeleccionada != null) {
             casillaVistaSeleccionada.deseleccionar();
         }
-
-        this.casillaVistaSeleccionada = casillaVista;
-        this.codigoCasillaSeleccionada = casillaVista.obtenerCodigo();
-        
-        if (codigoCasillaSeleccionada != null) {
-            casillaVistaSeleccionada.seleccionar(juego.devuelveTurno());
-            if (casillaVistaSeleccionada.estaSeleccionada()) {
-                if (casillaVistaSeleccionada.estaConfirmada()) {
-                    if (juego.completo()) {
-                        System.out.println("completo");
+        if (juego.devuelveTurno().equals(juego.devuelveUsuario())) {
+            this.casillaVistaSeleccionada = casillaVista;
+            this.codigoCasillaSeleccionada = casillaVista.obtenerCodigo();
+            if (codigoCasillaSeleccionada != null) {
+                casillaVistaSeleccionada.seleccionar(juego.devuelveFicha());
+                if (casillaVistaSeleccionada.estaSeleccionada()) {
+                    if (casillaVistaSeleccionada.estaConfirmada()) {
+                        if (juego.completo()) {
+                            activarBotonConfirmar(true);
+                        } else {
+                            activarBotonConfirmar(false);
+                        }
+                    } else {
                         activarBotonConfirmar(true);
-                    }else{
-                        activarBotonConfirmar(false);
                     }
-                } else {
-                    activarBotonConfirmar(true);
                 }
             }
         }
@@ -221,8 +217,8 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
                 mostrarMensaje(TEXTO_AYUDA + juego.devuelveTurno());
                 break;
                 
-            case ACABAR_PARTIDA:
-                oyenteVista.eventoProducido(OyenteVista.Evento.ACABAR_PARTIDA, VACIO);
+            case ABANDONAR_PARTIDA:
+                oyenteVista.eventoProducido(OyenteVista.Evento.ABANDONAR_PARTIDA, VACIO);
                 break;
         }
     }
@@ -231,24 +227,46 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         Juego.VERSION, 
         JOptionPane.INFORMATION_MESSAGE);
     }
+    
+    private void vaciarTodo(){
+        historialJugadas = VACIO;
+        texto.setText(historialJugadas);
+        
+        contrincante = VACIO;
+        etiquetaContrincante.setText(contrincante);
+        tableroVista.ponerTablero(juego.devuelveTablero());
+        tableroVista.ponerCasillas();
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(juego.GANADOR)) {
-            String ganador = (String) evt.getNewValue();
-            mostrarTextoJugada(ganador);
-            mostrarMensaje(ganador);
-            oyenteVista.eventoProducido(OyenteVista.Evento.ACABAR_PARTIDA, null);
-        }else if(evt.getPropertyName().equals(juego.ACABAR_PARTIDA)){
-            historialJugadas = VACIO;
+        if (evt.getPropertyName().equals(juego.ACABAR_PARTIDA)) {
+            boolean ganador = (boolean) evt.getNewValue();
+            if(ganador){
+                mostrarMensaje(GANADOR);
+            }else{
+                mostrarMensaje(PERDEDOR);
+            }
+            vaciarTodo();
             InicioVista inicio = InicioVista.instancia(oyenteVista, juego);
             inicio.setVisible(true);
             ventana.setVisible(false);
+        }else if(evt.getPropertyName().equals(juego.ACTUALIZAR_TABLERO)){
+            tableroVista.setEnabled(true);
+            botonConfirmar.setEnabled(true);
+            tableroVista.ponerCasillas();
             
+        }else if(evt.getPropertyName().equals(juego.PONER_FICHA)){
+            botonConfirmar.setEnabled(false);
+            tableroVista.setEnabled(false);
+            
+        }else if(evt.getPropertyName().equals(Juego.ENCUENTRA_PARTIDA)){
+            contrincante = juego.devuelveContrincante();
+            etiquetaContrincante.setText(CONTRINCANTE + contrincante);
         }
     }
     /*
-     * Activa el boton de asignar
+     * Activa el boton de confirmar
     */
     private void activarBotonConfirmar(boolean activar){
         botonConfirmar.setEnabled(activar);

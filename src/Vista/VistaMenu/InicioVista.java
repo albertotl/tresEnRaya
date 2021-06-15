@@ -196,11 +196,16 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
                 mostrarMensaje(NUEVA_PARTIDA);
                 JuegoVista juegoVista =  JuegoVista.instancia(oyenteVista, juego);
                 juegoVista.visualizarVentana();
+                jLabel3.setEnabled(false);
                 this.setVisible(false);
             }else{
                 mostrarMensaje(ESPERANDO_ADVERSARIO);
+                jButton1.setEnabled(false);
                 jLabel3.setEnabled(true);
             }
+        }else if (evt.getPropertyName().equals(juego.ACABAR_PARTIDA)) {
+            jButton1.setEnabled(true);
+            jLabel3.setEnabled(false);
         }
     }    
 }

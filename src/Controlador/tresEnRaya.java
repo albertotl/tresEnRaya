@@ -4,8 +4,6 @@ package Controlador;
 import Modelo.*;
 import Vista.VistaMenu.InicioSesionVista;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -29,8 +27,8 @@ public class tresEnRaya implements OyenteVista{
                 juego.ponerFicha(String.valueOf(obj));
                 break;
                 
-            case ACABAR_PARTIDA:
-                juego.acabarPartida();
+            case ABANDONAR_PARTIDA:
+                juego.abandonarPartida();
                 break;
             
             case INICIAR_SESION:
@@ -40,7 +38,6 @@ public class tresEnRaya implements OyenteVista{
                 } catch (IOException ex) {
                     
                 }
-            
                 break;
 
                 

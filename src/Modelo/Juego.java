@@ -28,13 +28,16 @@ public class Juego implements OyenteServidor {
     public static final String ERROR_CONEXION = "ERROR";
     public static final String ERROR = "Error---";
     public static final String GANADOR = "poner_ficha";
+    public static final String PARTIDA_GANADA = "partida_ganada";
+    public static final String PARTIDA_PERDIDA = "partida_perdida";
     public static final String REGISTRARSE = "registrarse";
     public static final String ENCUENTRA_PARTIDA = "encuentra_partida";
     public static final String ACABAR_PARTIDA = "acabar_partida";
     public static final String INICIAR_SESION = "iniciar_sesion";
     public static final String PROPIEDAD_CONECTADO = "Conectado";
     public static final String SEPARADOR = "'";
-    
+    public static final String ACTUALIZAR_TABLERO = "actualizar_tablero";
+    public static final String PONER_FICHA = "poner_fichaa";
     
     public static final String ID_USUARIO = "idUsuario";
     public static final String NOMBRE = "nombre";
@@ -49,17 +52,14 @@ public class Juego implements OyenteServidor {
     private OyenteServidor oyenteServidor;
     private PropertyChangeSupport observadores;
     private Tablero tablero;
-    
-    //private String ficha;  //Tipo de ficha que asiganara el servidor para una partida
-    //private boolean turno; //Si el cliente tiene o no el turno de jugada
-    
-    
+   
     private boolean conectado;
     private String idConexion;
     private String idJuego;
     private String idUsuario;
     private String contrincante;
-    private String turno;
+    private String ficha; // Tipo de ficha que se le asigna al jugador
+    private String turno; // Tipo de ficha la cual tiene el turno
     
     private List<String> historial;
 
@@ -80,8 +80,16 @@ public class Juego implements OyenteServidor {
         return turno;
     }
     
+    public String devuelveFicha(){
+        return ficha;
+    }
+    
     public String devuelveUsuario(){
         return idUsuario;
+    }
+    
+    public String devuelveContrincante(){
+        return contrincante;
     }
     public List<String> devuelveHistorial(){
         return historial;
@@ -158,28 +166,38 @@ public class Juego implements OyenteServidor {
     }
 
     /*
-    * Intercambia turnos entre los jugadores y pone la ficha en la casilla correspondiente
+    * Solicita al servidor poner una ficha en la casilla correspondiente
      */
-    public void ponerFicha(String codigo) {
-        Casilla casilla = tablero.devolverCasilla(codigo);
-
-        if (casilla != null) {
-            if (casilla.devuelveTipo() == null || tablero.completo()) {
-                if (turno.equals(CIRCULO)) {
-                    Circulo ficha = new Circulo();
-                    casilla.introducirFicha(ficha);
-                    turno = CRUZ;
-                } else {
-                    Cruz ficha = new Cruz();
-                    casilla.introducirFicha(ficha);
-                    turno = CIRCULO;
+    public void ponerFicha(String codigo){
+        if(conectado){
+            if(turno.equals(idUsuario)){
+                Casilla casilla = tablero.devolverCasilla(codigo);
+                if (casilla != null) {
+                    if (casilla.devuelveTipo() == null || completo()) {
+                        String informacion = idUsuario + SEPARADOR + 
+                                    idJuego + SEPARADOR + codigo;
+                        try{
+                            PrimitivaComunicacion respuesta = cliente.
+                                enviarSolicitud(PrimitivaComunicacion.
+                                PONER_FICHA, Cliente.TIEMPO_ESPERA_SERVIDOR,
+                                informacion);
+                            if(respuesta.equals(PrimitivaComunicacion.OK)){
+                                if (ficha.equals(CIRCULO)) {
+                                    Circulo ficha = new Circulo();
+                                    casilla.introducirFicha(ficha);
+                                } else {
+                                    Cruz ficha = new Cruz();
+                                    casilla.introducirFicha(ficha);
+                                }
+                                turno = contrincante;
+                                observadores.firePropertyChange(PONER_FICHA, null, null);
+                            }
+                        }catch(IOException e){
+                            System.out.println(e);
+                        }
+                    }
                 }
             }
-        }
-        if(!verificarTablero().equals(VACIO)){
-            this.observadores.firePropertyChange(GANADOR,
-                    null, verificarTablero());
-            
         }
     }
 
@@ -197,114 +215,6 @@ public class Juego implements OyenteServidor {
             cadena = cadena + "\n";
         }
         return cadena;
-    }
-
-    /*
-    * Verifica si hay ganador en las filas
-     */
-    public String verificarFilas() {
-        boolean ganador = true;
-        for (int i = 0; i < Tablero.DIMENSION; i++) {
-            String tipo = tablero.devolverTipoCasilla(i, 0);
-            if (tipo != null) {
-                for (int j = 0; j < Tablero.DIMENSION; j++) {
-                    if (tipo != tablero.devolverTipoCasilla(i, j)) {
-                        ganador = false;
-                    }
-                }
-                if (ganador) {
-                    return "Ganador " + tipo + " en fila " + (i + 1);
-                }
-                ganador = true;
-            }
-        }
-        return null;
-    }
-
-    /*
-    * Verifica si hay ganador en las columnas
-     */
-    public String verificarColumnas() {
-        boolean ganador = true;
-        for (int i = 0; i < Tablero.DIMENSION; i++) {
-            String tipo = tablero.devolverTipoCasilla(0, i);
-            if (tipo != null) {
-                for (int j = 0; j < Tablero.DIMENSION; j++) {
-                    if (tipo != tablero.devolverTipoCasilla(j, i)) {
-                        ganador = false;
-                    }
-                }
-                if (ganador) {
-                    return "Ganador " + tipo + " en columna " + (i + 1);
-                }
-                ganador = true;
-            }
-        }
-        return null;
-    }
-
-    /*
-    * Verifica si hay ganador en la diagonal 1 (\)
-     */
-    public String verificarDiagonal1() {
-        boolean ganador = true;
-        String tipo = tablero.devolverTipoCasilla(0, 0);
-        if (tipo != null) {
-            for (int i = 1; i < Tablero.DIMENSION; i++) {
-                if (tipo != tablero.devolverTipoCasilla(i, i)) {
-                    ganador = false;
-                    break;
-                }
-            }
-            if (ganador) {
-                return "Ganador " + tipo + " en diagonal \\";
-            }
-        }
-        return null;
-    }
-
-    /*
-    * Verifica si hay ganador en la diagonal 2 (/)
-     */
-    public String verificarDiagonal2() {
-
-        String tipo2 = tablero.devolverTipoCasilla(0, 2);
-        boolean ganador = true;
-        if (tipo2 != null) {
-            for (int i = 1, j = 1; i < Tablero.DIMENSION; i++, j--) {
-                if (tipo2 != tablero.devolverTipoCasilla(i, j)) {
-                    ganador = false;
-                    break;
-                }
-            }
-            if (ganador) {
-                return "Ganador " + tipo2 + " en diagonal /";
-            }
-        }
-        return null;
-    }
-
-    /*
-    * Verifica si hay ganador en el tablero
-     */
-    public String verificarTablero() {
-        String filas = verificarFilas();
-        if (filas != null) {
-            return filas;
-        }
-        String columnas = verificarColumnas();
-        if (columnas != null) {
-            return columnas;
-        }
-        String diagonal1 = verificarDiagonal1();
-        if (diagonal1 != null) {
-            return diagonal1;
-        }
-        String diagonal2 = verificarDiagonal2();
-        if (diagonal2 != null) {
-            return diagonal2;
-        }
-        return VACIO;
     }
     
     /*
@@ -325,14 +235,14 @@ public class Juego implements OyenteServidor {
     }
     
     /*
-    * Envia el resultado al servidor y limpia el tablero
+    * Limpia el tablero
     */
     public void acabarPartida(){
-        // Enviar resultado a servidor
-        this.tablero.vaciar();
-         this.observadores.firePropertyChange(ACABAR_PARTIDA,
-                    null, null);
-        
+        this.tablero = new Tablero();
+        this.idJuego = "";
+        this.ficha = "";
+        this.contrincante = "";
+        this.turno = "";
     }
     
     /*
@@ -388,6 +298,8 @@ public class Juego implements OyenteServidor {
             }
         }
     }
+    
+    
     /*
     * Hace una peticion al servidor para registrar un nuevo idUsuario
     */
@@ -408,28 +320,89 @@ public class Juego implements OyenteServidor {
         }
     }
     
-    private void solicitudServidorPonerFicha(){
-        
-    } 
     
-    public void buscarPartida() throws IOException{
+    public void buscarPartida(){
         if(conectado){
             boolean exito = false;
             String datos = idUsuario + SEPARADOR + idConexion;
             List<String> resultados = new ArrayList<>();
-            cliente.enviarSolicitud(PrimitivaComunicacion.BUSCAR_PARTIDA, Cliente.TIEMPO_ESPERA_SERVIDOR, datos, resultados);
+            try{
+                cliente.enviarSolicitud(PrimitivaComunicacion.BUSCAR_PARTIDA,
+                    Cliente.TIEMPO_ESPERA_SERVIDOR, datos, resultados);
+            }catch(IOException e){
+                System.out.println(e);
+            }
+            
             if(!resultados.isEmpty()){
                 exito = true;
                 idJuego = resultados.get(0);
-                contrincante = resultados.get(1);
+                turno = resultados.get(1);
+                contrincante = resultados.get(2);
+                ficha = resultados.get(3);
             }
-           
-            
-            
             this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
                     null, exito);
+        }
+    }
+    
+    public void abandonarPartida(){
+        if(conectado){
             
         }
+    }
+    
+    public boolean solicitudServidorAcabarPartida(List<String> resultados){
+        if(resultados.get(0).equals(PARTIDA_GANADA)){
+            acabarPartida();
+            this.observadores.firePropertyChange(ACABAR_PARTIDA,
+                 null, true);
+            return true;
+        }else if(resultados.get(0).equals(PARTIDA_PERDIDA)){
+            acabarPartida();
+            this.observadores.firePropertyChange(ACABAR_PARTIDA,
+                 null, false);
+            return true;
+        }
+        return false;
+    }
+    
+    
+    public boolean solicitudServidorNuevaPartida(List<String> resultados){
+        String informacion = resultados.get(0);
+        
+        String[] datos = informacion.split(SEPARADOR);
+        if(datos.length < 5){
+            idJuego = datos[0];
+            turno = datos[1];
+            ficha = datos[2];
+            contrincante = datos[3];
+            this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
+                    null, true);
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean solicitudServidorPonerFicha(List<String> resultados){
+            String informacion = resultados.get(0);
+            String[] datos = informacion.split(SEPARADOR);
+            
+            String codigo = datos[0];
+            turno = datos[1];
+            Casilla casilla = tablero.devolverCasilla(codigo);
+            if(casilla != null){
+                if(ficha.equals(CIRCULO)){
+                    Ficha ficha = new Cruz();
+                    casilla.introducirFicha(ficha);
+                }else{
+                    Ficha ficha = new Circulo();
+                    casilla.introducirFicha(ficha);
+                }
+                this.observadores.firePropertyChange(ACTUALIZAR_TABLERO,
+                    null, null);
+                return true;
+            }
+        return false;
     }
 
     @Override
@@ -443,8 +416,14 @@ public class Juego implements OyenteServidor {
                 return solicitudServidorNuevoIdConexion(resultados);
             
             case PARTIDA_ENCONTRADA:
-                this.observadores.firePropertyChange(ENCUENTRA_PARTIDA,
-                    null, true);
+                return solicitudServidorNuevaPartida(resultados);
+                
+            case ACABAR_PARTIDA:
+                return solicitudServidorAcabarPartida(resultados);
+                
+            case PONER_FICHA:
+                return solicitudServidorPonerFicha(resultados);
+                
             default:
                 return false;
         }
