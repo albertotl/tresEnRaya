@@ -32,6 +32,7 @@ public class Juego implements OyenteServidor {
     public static final String REGISTRARSE = "registrarse";
     public static final String ENCUENTRA_PARTIDA = "encuentra_partida";
     public static final String PEDIR_HISTORIAL = "pedir_historial";
+    public static final String CERRAR_SESION = "cerrar_sesion";
     public static final String ACABAR_PARTIDA = "acabar_partida";
     public static final String INICIAR_SESION = "iniciar_sesion";
     public static final String PROPIEDAD_CONECTADO = "Conectado";
@@ -326,6 +327,26 @@ public class Juego implements OyenteServidor {
         }
     }
     
+    
+    public void cerrarSesion(){
+         if(conectado){
+              try{
+                PrimitivaComunicacion respuesta = 
+                    cliente.enviarSolicitud(PrimitivaComunicacion.CERRAR_SESION,
+                    Cliente.TIEMPO_ESPERA_SERVIDOR, idConexion);
+                if(respuesta == PrimitivaComunicacion.OK){
+                    idUsuario = null;
+                    contrincante = null;
+                    idJuego = null;
+                }
+                this.observadores.firePropertyChange(CERRAR_SESION,
+                    null, null);
+            }catch(IOException e){
+                System.out.println(e);
+            }
+         }
+    }
+    
     public void pedirHistorial(){
         if(conectado){
             String datos = idUsuario;
@@ -353,7 +374,6 @@ public class Juego implements OyenteServidor {
             }catch(IOException e){
                 System.out.println(e);
             }
-            
             if(!resultados.isEmpty()){
                 exito = true;
                 idJuego = resultados.get(0);
@@ -368,7 +388,18 @@ public class Juego implements OyenteServidor {
     
     public void abandonarPartida(){
         if(conectado){
-            
+            String datos = idConexion;
+            try{
+                PrimitivaComunicacion respuesta = cliente.enviarSolicitud(
+                        PrimitivaComunicacion.ACABAR_PARTIDA, 
+                        Cliente.TIEMPO_ESPERA_SERVIDOR, datos);
+                if(respuesta == PrimitivaComunicacion.OK){
+                    this.observadores.firePropertyChange(ACABAR_PARTIDA,
+                        null, false);
+                }
+            }catch(IOException e){
+                System.out.println(e);
+            }
         }
     }
     
@@ -386,6 +417,7 @@ public class Juego implements OyenteServidor {
         }
         return false;
     }
+    
     
     
     public boolean solicitudServidorNuevaPartida(List<String> resultados){

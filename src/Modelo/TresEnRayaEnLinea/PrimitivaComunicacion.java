@@ -20,6 +20,7 @@ public enum PrimitivaComunicacion {
   REGISTRARSE("register_on"),
   BUSCAR_PARTIDA("search_game"),
   ACABAR_PARTIDA("finish_game"),
+  CERRAR_SESION("log_out"),
   OBTENER_TABLERO("get_board"),
   PARTIDA_ENCONTRADA("find_game"),
   PEDIR_HISTORIAL("get_historial"),
@@ -39,6 +40,7 @@ public enum PrimitivaComunicacion {
                            INICIAR_SESION.toString() + "|"+
                            OBTENER_TABLERO.toString() + "|"+
                            TEST.toString() + "|"+
+                           CERRAR_SESION.toString() + "|"+
                            PARTIDA_ENCONTRADA.toString() + "|" +
                            PEDIR_HISTORIAL.toString() + "|" +
                            FIN.toString() + "|" +               
@@ -94,6 +96,9 @@ public enum PrimitivaComunicacion {
     }
     else if (token.equals(PEDIR_HISTORIAL.toString())) {
       return PEDIR_HISTORIAL;    
+    }
+    else if (token.equals(CERRAR_SESION.toString())) {
+      return CERRAR_SESION;    
     }
     else if (token.equals(FIN.toString())) {
       return FIN;    

@@ -52,6 +52,10 @@ public class tresEnRaya implements OyenteVista{
             case BUSCAR_PARTIDA:
                 juego.buscarPartida();
                 break;
+                
+            case CERRAR_SESION:
+                juego.cerrarSesion();
+                break;
         }
     }
     

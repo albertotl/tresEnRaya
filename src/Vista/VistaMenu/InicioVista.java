@@ -174,9 +174,8 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        InicioSesionVista inicioSesion = InicioSesionVista.instancia(oyenteVista, juego);
-        inicioSesion.setVisible(true);
-        this.setVisible(false);
+        oyenteVista.eventoProducido(OyenteVista.Evento.CERRAR_SESION, evt);
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -209,11 +208,21 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
                 jButton1.setEnabled(false);
                 jLabel3.setEnabled(true);
             }
-        }else if (evt.getPropertyName().equals(juego.ACABAR_PARTIDA)){
+        }else if (evt.getPropertyName().equals(Juego.ACABAR_PARTIDA)){
             jButton1.setEnabled(true);
             jLabel3.setEnabled(false);
-        }else if (evt.getPropertyName().equals(juego.PEDIR_HISTORIAL)){
+        }else if (evt.getPropertyName().equals(Juego.PEDIR_HISTORIAL)){
             ponerDatos();
+        }else if(evt.getPropertyName().equals(Juego.CERRAR_SESION)){
+            historial = null;
+            usuario = null;
+            jButton1.setEnabled(true);
+            jLabel3.setEnabled(false);
+            InicioSesionVista inicioSesion = InicioSesionVista.instancia(oyenteVista, juego);
+            inicioSesion.setVisible(true);
+            this.setVisible(false);
         }
+        
+        
     }    
 }
