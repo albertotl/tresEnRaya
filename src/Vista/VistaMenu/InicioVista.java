@@ -34,9 +34,9 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         this.oyenteVista = oyenteVista;
         this.juego = juego;
         historial = new ArrayList<>();
+        initComponents();
         ponerDatos();
         juego.nuevoObservador(this);
-        initComponents();
         jLabel3.setEnabled(false);
         this.setLocationRelativeTo(null);
     }
@@ -58,6 +58,12 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         if(usuario != null){
             this.usuario = usuario;
         }
+        String informacion = "";
+        for(String linea: historial){
+            informacion = linea + SALTO + informacion;
+     
+        }
+        jTextArea1.setText(informacion);
     }
     
     private void mostrarMensaje(String mensaje){
@@ -203,9 +209,11 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
                 jButton1.setEnabled(false);
                 jLabel3.setEnabled(true);
             }
-        }else if (evt.getPropertyName().equals(juego.ACABAR_PARTIDA)) {
+        }else if (evt.getPropertyName().equals(juego.ACABAR_PARTIDA)){
             jButton1.setEnabled(true);
             jLabel3.setEnabled(false);
+        }else if (evt.getPropertyName().equals(juego.PEDIR_HISTORIAL)){
+            ponerDatos();
         }
     }    
 }

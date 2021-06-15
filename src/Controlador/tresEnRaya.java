@@ -33,28 +33,20 @@ public class tresEnRaya implements OyenteVista{
             
             case INICIAR_SESION:
                 Tupla<String, String> tupla = (Tupla<String, String>)obj;
-                try {
-                    juego.iniciarSesion(tupla.a, tupla.b);
-                } catch (IOException ex) {
-                    
-                }
+                juego.iniciarSesion(tupla.a, tupla.b);
                 break;
 
-                
             case REGISTRARSE:
                 Tupla<String, String> tupla2 = (Tupla<String, String>)obj;
-            {
-                try {
-                    juego.registrar(tupla2.a, tupla2.b);
-                } catch (IOException ex) {
-                    
-                }
-            }
+                juego.registrar(tupla2.a, tupla2.b);
                 break;
 
-            
             case SALIR:
                 System.exit(0);
+                break;
+                
+            case PEDIR_HISTORIAL:
+                juego.pedirHistorial();
                 break;
             
             case BUSCAR_PARTIDA:

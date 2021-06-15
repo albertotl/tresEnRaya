@@ -251,6 +251,8 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
             InicioVista inicio = InicioVista.instancia(oyenteVista, juego);
             inicio.setVisible(true);
             ventana.setVisible(false);
+            oyenteVista.eventoProducido(OyenteVista.Evento.PEDIR_HISTORIAL, evt);
+            
         }else if(evt.getPropertyName().equals(juego.ACTUALIZAR_TABLERO)){
             tableroVista.setEnabled(true);
             botonConfirmar.setEnabled(true);

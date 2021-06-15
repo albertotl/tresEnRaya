@@ -9,7 +9,6 @@ import Modelo.TresEnRayaEnLinea.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.io.StringReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class Juego implements OyenteServidor {
     public static final String PARTIDA_PERDIDA = "partida_perdida";
     public static final String REGISTRARSE = "registrarse";
     public static final String ENCUENTRA_PARTIDA = "encuentra_partida";
+    public static final String PEDIR_HISTORIAL = "pedir_historial";
     public static final String ACABAR_PARTIDA = "acabar_partida";
     public static final String INICIAR_SESION = "iniciar_sesion";
     public static final String PROPIEDAD_CONECTADO = "Conectado";
@@ -267,8 +267,7 @@ public class Juego implements OyenteServidor {
     /*
     * Hace una peticion al servidor de iniciar sesion 
      */
-    public void iniciarSesion(String usuario, String contrasena)
-            throws IOException {
+    public void iniciarSesion(String usuario, String contrasena){
         if (conectado) {
             //Se cifra la contraseña antes de enviarla
             String contrasenaCifrada = cifrarContrasena(contrasena);
@@ -276,24 +275,28 @@ public class Juego implements OyenteServidor {
                 historial = new ArrayList<>();
                 String credenciales = idConexion + SEPARADOR
                         + usuario + SEPARADOR + contrasenaCifrada;
-                cliente.enviarSolicitud(PrimitivaComunicacion.INICIAR_SESION,
-                        Cliente.TIEMPO_ESPERA_SERVIDOR,
-                        credenciales, historial);
-                if(historial.get(0).equals(ERROR_CONEXION)){
-                    Tupla tupla = new Tupla<>(ERROR, ERROR);
-                    this.observadores.firePropertyChange(INICIAR_SESION,
-                            null, tupla);
-                }else{
-                    idUsuario = usuario;
-                    if (historial.isEmpty()) {
-                        Tupla tupla = new Tupla<>(this.idUsuario, VACIO);
+                try {
+                    cliente.enviarSolicitud(PrimitivaComunicacion.INICIAR_SESION,
+                            Cliente.TIEMPO_ESPERA_SERVIDOR,
+                            credenciales, historial);
+                    if (historial.get(0).equals(ERROR_CONEXION)) {
+                        Tupla tupla = new Tupla<>(ERROR, ERROR);
                         this.observadores.firePropertyChange(INICIAR_SESION,
-                            null, tupla);
-                    }else{
-                        Tupla tupla = new Tupla<>(this.idUsuario, this.historial);
-                        this.observadores.firePropertyChange(INICIAR_SESION,
-                            null, tupla);
+                                null, tupla);
+                    } else {
+                        idUsuario = usuario;
+                        if (historial.get(0).equals("OK")) {
+                            Tupla tupla = new Tupla<>(this.idUsuario, VACIO);
+                            this.observadores.firePropertyChange(INICIAR_SESION,
+                                    null, tupla);
+                        } else {
+                            Tupla tupla = new Tupla<>(this.idUsuario, this.historial);
+                            this.observadores.firePropertyChange(INICIAR_SESION,
+                                    null, tupla);
+                        }
                     }
+                } catch (IOException e) {
+                    System.out.println(e);
                 }
             }
         }
@@ -303,20 +306,38 @@ public class Juego implements OyenteServidor {
     /*
     * Hace una peticion al servidor para registrar un nuevo idUsuario
     */
-    public void registrar(String usuario, String contrasena) 
-            throws IOException{
+    public void registrar(String usuario, String contrasena){
         if(conectado){
             boolean exito = false;
             String contrasenaCifrada = cifrarContrasena(contrasena);
             String datos = usuario + SEPARADOR + contrasenaCifrada;
-            PrimitivaComunicacion respuesta = 
+            try{
+                PrimitivaComunicacion respuesta = 
                     cliente.enviarSolicitud(PrimitivaComunicacion.REGISTRARSE,
                     Cliente.TIEMPO_ESPERA_SERVIDOR, datos);
-            if(respuesta == PrimitivaComunicacion.OK){
-                exito = true;
-            }
-            this.observadores.firePropertyChange(REGISTRARSE,
+                if(respuesta == PrimitivaComunicacion.OK){
+                    exito = true;
+                }
+                this.observadores.firePropertyChange(REGISTRARSE,
                     null, exito);
+            }catch(IOException e){
+                System.out.println(e);
+            }
+        }
+    }
+    
+    public void pedirHistorial(){
+        if(conectado){
+            String datos = idUsuario;
+            try {
+                cliente.enviarSolicitud(PrimitivaComunicacion.PEDIR_HISTORIAL,
+                        Cliente.TIEMPO_ESPERA_SERVIDOR, datos, historial);
+                this.observadores.firePropertyChange(PEDIR_HISTORIAL,
+                                    null, historial);
+                
+            }catch(IOException e){
+                System.out.println(e);
+            }
         }
     }
     
