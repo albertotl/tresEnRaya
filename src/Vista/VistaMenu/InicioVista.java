@@ -52,6 +52,9 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         return instancia;
     }
     
+    /*
+    * Actualiza los contenedores de datos  
+    */        
     private void ponerDatos(){
         String usuario = juego.devuelveUsuario();
         historial = juego.devuelveHistorial();
@@ -65,7 +68,9 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         }
         jTextArea1.setText(informacion);
     }
-    
+    /*
+    * Muestra el parametro 'mensaje' en una nueva ventana
+    */
     private void mostrarMensaje(String mensaje){
      JOptionPane.showMessageDialog(this, mensaje, 
         Juego.VERSION, 
@@ -168,11 +173,15 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /*
+    * Accion del boton para buscar partida
+    */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         oyenteVista.eventoProducido(OyenteVista.Evento.BUSCAR_PARTIDA, VACIO);
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    /*
+    * Accion del boton para cerrar sesion
+    */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         oyenteVista.eventoProducido(OyenteVista.Evento.CERRAR_SESION, evt);
         
@@ -194,12 +203,16 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
     // End of variables declaration//GEN-END:variables
 
     @Override
+    /*
+    * Recibe los cambios en el modelo
+    */
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(Juego.ENCUENTRA_PARTIDA)) {
             boolean exito = (boolean)evt.getNewValue();
             if(exito){
                 mostrarMensaje(NUEVA_PARTIDA);
-                JuegoVista juegoVista =  JuegoVista.instancia(oyenteVista, juego);
+                JuegoVista juegoVista =  
+                        JuegoVista.instancia(oyenteVista, juego);
                 juegoVista.visualizarVentana();
                 jLabel3.setEnabled(false);
                 this.setVisible(false);
@@ -218,7 +231,8 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
             usuario = null;
             jButton1.setEnabled(true);
             jLabel3.setEnabled(false);
-            InicioSesionVista inicioSesion = InicioSesionVista.instancia(oyenteVista, juego);
+            InicioSesionVista inicioSesion = 
+                    InicioSesionVista.instancia(oyenteVista, juego);
             inicioSesion.setVisible(true);
             this.setVisible(false);
         }

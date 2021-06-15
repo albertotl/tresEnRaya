@@ -58,6 +58,9 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         etiquetaContrincante.setText(CONTRINCANTE + contrincante);
     }
     
+   /*
+   * Crea la venta de juegoVista
+   */
     private void crearVentana() {
         //String idUsuario = juego.obtenerIdUsuario();
         ventana = new JFrame(Juego.VERSION);
@@ -102,6 +105,9 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         ventana.setLocationRelativeTo(null); 
     }
     
+    /*
+    * Hace visible juegoVista
+    */
     public void visualizarVentana(){
         ventana.setVisible(true);
     }
@@ -129,6 +135,9 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         return boton;
     }
     
+    /*
+    * Crea la barra de herramientas
+    */
     private void crearBarraHerramientas(JPanel panel){
         JToolBar barra = new JToolBar();
         barra.setFloatable(false);
@@ -145,6 +154,9 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         panel.add(barra);
     }
     
+    /*
+    * Crea el panel del tablero
+    */
     private void crearPanelTablero(JPanel panel){
         panel.setLayout(new FlowLayout());
         tableroVista.ponerTablero(juego.devuelveTablero());
@@ -153,6 +165,9 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         panel.add(tableroVista);
     }
     
+    /*
+    * Crea el panel de los botones
+    */
     private void crearPanelBotones(JPanel panel){
         panel.setLayout(new FlowLayout());
         botonConfirmar = crearBoton(PONER_FICHA);
@@ -161,7 +176,9 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         botonSalir = crearBoton(ABANDONAR_PARTIDA);
         panel.add(botonSalir);
     }
-    
+    /*
+    * Crea el panel de las jugadas
+    */
     private void crearPanelJugadas(JPanel panel){
         texto = new JTextArea(16,13);
         texto.setLineWrap(true);
@@ -169,12 +186,17 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         JScrollPane scroll = new JScrollPane(texto);
         panel.add(scroll);
     }
-    
+    /*
+    * Muestra en el panel de las jugadas el historial
+    */
     private void mostrarTextoJugada(String jugada){
             historialJugadas = historialJugadas  + jugada + "\n";
             texto.setText(historialJugadas);
     }
     
+    /*
+    * Selecciona una casilla de tableroVista
+    */
     public void seleccionarCasillaVista(CasillaVista casillaVista) {
         if (casillaVistaSeleccionada != null) {
             casillaVistaSeleccionada.deseleccionar();
@@ -200,10 +222,16 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     }
   
     @Override
+    /*
+    * Se notifican los eventos de los botones
+    */
     public void actionPerformed(ActionEvent e) {
         notificacionAControl(e.getActionCommand());
     }
     
+    /*
+    * Se notifica a control los posibles eventos ocurridos
+    */
     private void notificacionAControl(String evento){
         switch(evento){
             case PONER_FICHA:
@@ -222,12 +250,25 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
                 break;
         }
     }
+    /*
+    * Muestra un mensaje por pantalla
+    */
     private void mostrarMensaje(String mensaje){
      JOptionPane.showMessageDialog(ventana, mensaje, 
         Juego.VERSION, 
         JOptionPane.INFORMATION_MESSAGE);
     }
     
+    /*
+     * Activa el boton de confirmar
+    */
+    private void activarBotonConfirmar(boolean activar){
+        botonConfirmar.setEnabled(activar);
+    }
+    
+    /*
+    * Vacia toda la vista de la venta de juegoVista
+    */
     private void vaciarTodo(){
         historialJugadas = VACIO;
         texto.setText(historialJugadas);
@@ -239,6 +280,9 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     }
 
     @Override
+    /*
+    * Se notifican los cambios ocurridos en el modelo
+    */
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(juego.ACABAR_PARTIDA)) {
             boolean ganador = (boolean) evt.getNewValue();
@@ -266,11 +310,5 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
             contrincante = juego.devuelveContrincante();
             etiquetaContrincante.setText(CONTRINCANTE + contrincante);
         }
-    }
-    /*
-     * Activa el boton de confirmar
-    */
-    private void activarBotonConfirmar(boolean activar){
-        botonConfirmar.setEnabled(activar);
     }
 }

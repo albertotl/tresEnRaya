@@ -36,7 +36,9 @@ public class TableroVista extends JPanel {
                 DIMENSION * ALTURA_FILA));
         
     }
-    
+    /*
+    * Carga la matriz de casillasVista
+    */
     private void crearCasillas(boolean recibeEventosRaton){
         setLayout(new GridLayout(DIMENSION, DIMENSION));
         casillasVista = new CasillaVista[DIMENSION][DIMENSION];
@@ -49,12 +51,17 @@ public class TableroVista extends JPanel {
             
         }
     }
-    
+    /*
+    * Actualiza el tablero actual por uno nuevo
+    */
     public void ponerTablero(Tablero tablero){
         this.tablero = tablero;
         iniciarTableroVista();
     }
     
+    /*
+    * Devuelve una casillaVista por un codigo de casilla
+    */
     private CasillaVista buscarCasillaVista(String codigo){
         for (int fila = 0; fila < DIMENSION; fila++) {
             for (int columna = 0; columna < DIMENSION; columna++) {
@@ -71,6 +78,9 @@ public class TableroVista extends JPanel {
         return null;
     }
     
+    /*
+    * Confirma la vista de una casilla en el tablero
+    */
     public void confirmarCasilla(String codigo, String tipo){
         CasillaVista casillaVista = buscarCasillaVista(codigo);
         
@@ -90,12 +100,18 @@ public class TableroVista extends JPanel {
         }
     } 
     
+    /*
+    * Pinta una casilla segun sus caracteristticas
+    */
     public void pintaCasilla(CasillaVista casillaVista, Casilla casilla){
         if(casilla.devuelveTipo() != null){
             casillaVista.confirmar(casilla.devuelveTipo());
         }
     }
     
+    /*
+    * Pone todas las casillas con sus respectivas caracteristicas
+    */
     public void ponerCasillas(){
         iniciarTableroVista();
         Casilla[][] casillas = tablero.devuelveCasillas();

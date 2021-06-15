@@ -191,7 +191,8 @@ public class Juego implements OyenteServidor {
                                     casilla.introducirFicha(ficha);
                                 }
                                 turno = contrincante;
-                                observadores.firePropertyChange(PONER_FICHA, null, null);
+                                observadores.firePropertyChange(
+                                        PONER_FICHA, null, null);
                             }
                         }catch(IOException e){
                             System.out.println(e);
@@ -201,7 +202,9 @@ public class Juego implements OyenteServidor {
             }
         }
     }
-
+    /*
+    * Muestra el tablero actual con una cadena de caracteres
+    */
     public String mostrarTablero() {
         String cadena = "";
         String tipo = "";
@@ -277,8 +280,8 @@ public class Juego implements OyenteServidor {
                 String credenciales = idConexion + SEPARADOR
                         + usuario + SEPARADOR + contrasenaCifrada;
                 try {
-                    cliente.enviarSolicitud(PrimitivaComunicacion.INICIAR_SESION,
-                            Cliente.TIEMPO_ESPERA_SERVIDOR,
+                    cliente.enviarSolicitud(PrimitivaComunicacion.
+                            INICIAR_SESION, Cliente.TIEMPO_ESPERA_SERVIDOR,
                             credenciales, historial);
                     if (historial.get(0).equals(ERROR_CONEXION)) {
                         Tupla tupla = new Tupla<>(ERROR, ERROR);
@@ -291,7 +294,8 @@ public class Juego implements OyenteServidor {
                             this.observadores.firePropertyChange(INICIAR_SESION,
                                     null, tupla);
                         } else {
-                            Tupla tupla = new Tupla<>(this.idUsuario, this.historial);
+                            Tupla tupla = new Tupla<>(this.
+                                    idUsuario, this.historial);
                             this.observadores.firePropertyChange(INICIAR_SESION,
                                     null, tupla);
                         }
@@ -327,7 +331,9 @@ public class Juego implements OyenteServidor {
         }
     }
     
-    
+    /*
+    * Hace una peticion al servidor para desconectar al usuario
+    */
     public void cerrarSesion(){
          if(conectado){
               try{
@@ -347,6 +353,9 @@ public class Juego implements OyenteServidor {
          }
     }
     
+    /*
+    * Hace una peticion al servidor solicitando el historial actual
+    */
     public void pedirHistorial(){
         if(conectado){
             String datos = idUsuario;
@@ -362,7 +371,9 @@ public class Juego implements OyenteServidor {
         }
     }
     
-    
+    /*
+    * Hace una solicitud al servidor para encontrar una partida
+    */
     public void buscarPartida(){
         if(conectado){
             boolean exito = false;
@@ -386,6 +397,9 @@ public class Juego implements OyenteServidor {
         }
     }
     
+    /*
+    * Hace una solicitud al servidor para abandonar una partida
+    */
     public void abandonarPartida(){
         if(conectado){
             String datos = idConexion;
@@ -402,7 +416,9 @@ public class Juego implements OyenteServidor {
             }
         }
     }
-    
+    /*
+    * Recibe del servidor la solicitud de que ha concluido una partida
+    */
     public boolean solicitudServidorAcabarPartida(List<String> resultados){
         if(resultados.get(0).equals(PARTIDA_GANADA)){
             acabarPartida();
@@ -418,8 +434,9 @@ public class Juego implements OyenteServidor {
         return false;
     }
     
-    
-    
+    /*
+    * Recibe del servidor la solicitud de que se ha encontrado una partida
+    */
     public boolean solicitudServidorNuevaPartida(List<String> resultados){
         String informacion = resultados.get(0);
         
@@ -436,6 +453,9 @@ public class Juego implements OyenteServidor {
         return false;
     }
     
+    /*
+    * Recibe del servidor una solicitud de que se ha puesto una ficha
+    */
     public boolean solicitudServidorPonerFicha(List<String> resultados){
             String informacion = resultados.get(0);
             String[] datos = informacion.split(SEPARADOR);
@@ -459,6 +479,9 @@ public class Juego implements OyenteServidor {
     }
 
     @Override
+    /*
+    * Recibe todas las solitudes del servidor
+    */
     public boolean solicitudServidorProducida(PrimitivaComunicacion solicitud,
             List<String> resultados) throws IOException {
         if(resultados.isEmpty()){

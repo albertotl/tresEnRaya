@@ -145,7 +145,9 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /*
+    * Accion del boton registrarse
+    */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String usuario = jTextField1.getText();
         String contrasena = String.valueOf(jPasswordField1.getPassword());
@@ -159,7 +161,9 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
                     Juego.VERSION, JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    /*
+     * Accion del boton atras
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         InicioSesionVista inicioSesion = InicioSesionVista.instancia(oyenteVista, juego);
         inicioSesion.setVisible(true);
@@ -184,6 +188,9 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
     // End of variables declaration//GEN-END:variables
 
     @Override
+    /*
+    * Recibe los cambios de en el modelo
+    */
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(Juego.REGISTRARSE)) {
             boolean exito = (boolean)evt.getNewValue();
