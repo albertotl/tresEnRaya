@@ -1,3 +1,10 @@
+/**
+* Proyecto Software 2020-2021
+* 
+* Proyecto: Tres en raya 
+* 
+* Autor: Alberto Tena Litauszky (770079)
+*/
 package Vista.VistaMenu;
 
 import java.beans.PropertyChangeListener;
@@ -9,10 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-/**
- *
- * @author Alberto
- */
+
 public class InicioVista extends JFrame implements PropertyChangeListener{
     
     private String usuario;

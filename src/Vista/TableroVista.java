@@ -1,8 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/**
+* Proyecto Software 2020-2021
+* 
+* Proyecto: Tres en raya 
+* 
+* Autor: Alberto Tena Litauszky (770079)
+*/
 package Vista;
 
 import Modelo.Casilla;
@@ -11,10 +13,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
 
-/**
- *
- * @author Alberto
- */
 public class TableroVista extends JPanel {
     private static final int ALTURA_FILA = 85;
     private static final int ANCHURA_COLUMNA = 85;
@@ -123,5 +121,4 @@ public class TableroVista extends JPanel {
             }
         }
     }
-    
 }

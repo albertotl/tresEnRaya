@@ -1,4 +1,10 @@
-
+/**
+* Proyecto Software 2020-2021
+* 
+* Proyecto: Tres en raya 
+* 
+* Autor: Alberto Tena Litauszky (770079)
+*/
 package Vista;
 
 import Controlador.OyenteVista;
@@ -13,10 +19,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
 
-/**
- *
- * @author Alberto
- */
 public class JuegoVista implements ActionListener, PropertyChangeListener{
     private OyenteVista oyenteVista;
     private Juego juego;

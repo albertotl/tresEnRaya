@@ -1,14 +1,17 @@
-
+/**
+* Proyecto Software 2020-2021
+* 
+* Proyecto: Tres en raya 
+* 
+* Autor: Alberto Tena Litauszky (770079)
+*/
 package Controlador;
 
 import Modelo.*;
 import Vista.VistaMenu.InicioSesionVista;
 import java.io.IOException;
 
-/**
- *
- * @author Alberto
- */
+
 public class tresEnRaya implements OyenteVista{
     
     private Juego juego;

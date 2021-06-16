@@ -1,8 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/**
+* Proyecto Software 2020-2021
+* 
+* Proyecto: Tres en raya 
+* 
+* Autor: Alberto Tena Litauszky (770079)
+*/
 package Modelo.TresEnRayaEnLinea;
 
 import java.io.BufferedReader;
@@ -13,7 +15,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

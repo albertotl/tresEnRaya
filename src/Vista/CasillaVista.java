@@ -1,8 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/**
+* Proyecto Software 2020-2021
+* 
+* Proyecto: Tres en raya 
+* 
+* Autor: Alberto Tena Litauszky (770079)
+*/
 package Vista;
 
 import java.awt.event.MouseAdapter;
@@ -10,10 +12,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
-/**
- *
- * @author Alberto
- */
 public class CasillaVista extends JLabel {
     private JuegoVista vista;
     
