@@ -9,6 +9,7 @@ package Vista.VistaMenu;
 
 import Controlador.OyenteVista;
 import Modelo.*;
+import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
@@ -170,6 +171,7 @@ public class InicioSesionVista extends JFrame implements PropertyChangeListener 
     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         RegistroVista registro = RegistroVista.instancia(oyenteVista, juego);
+        registro.ubicarVentana(posicion());
         registro.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -177,7 +179,20 @@ public class InicioSesionVista extends JFrame implements PropertyChangeListener 
     private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
         
     }//GEN-LAST:event_jPasswordField1ActionPerformed
-
+    
+    /*
+    * Pone la ventana en la ultima ubicacion de la anterior       
+    */
+    public void ubicarVentana(Point p){
+        this.setLocation(p);
+    }        
+            
+    /*
+    * Devuelve la ubicacion de la ventana      
+    */
+    public Point posicion(){
+        return this.getLocation();
+    }
     @Override
     /*
     * Notificaciones de cambios en el modelo
@@ -192,6 +207,7 @@ public class InicioSesionVista extends JFrame implements PropertyChangeListener 
                     Juego.VERSION, JOptionPane.INFORMATION_MESSAGE);
             }else{
                 InicioVista inicio = InicioVista.instancia(oyenteVista, juego);
+                inicio.ubicarVentana(posicion());
                 inicio.setVisible(true);
                 this.setVisible(false);
             }

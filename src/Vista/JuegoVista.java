@@ -280,6 +280,20 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         tableroVista.ponerTablero(juego.devuelveTablero());
         tableroVista.ponerCasillas();
     }
+    
+    /*
+    * Pone la ventana en la ultima ubicacion de la anterior       
+    */
+    public void ubicarVentana(Point p){
+        ventana.setLocation(p);
+    }        
+            
+    /*
+    * Devuelve la ubicacion de la ventana      
+    */
+    public Point posicion(){
+        return ventana.getLocation();
+    }
 
     @Override
     /*
@@ -295,6 +309,7 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
             }
             vaciarTodo();
             InicioVista inicio = InicioVista.instancia(oyenteVista, juego);
+            inicio.ubicarVentana(posicion());
             inicio.setVisible(true);
             ventana.setVisible(false);
             oyenteVista.eventoProducido(OyenteVista.Evento.PEDIR_HISTORIAL, evt);

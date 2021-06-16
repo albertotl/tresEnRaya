@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import Modelo.*;
 
 import Controlador.OyenteVista;
+import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JOptionPane;
@@ -47,6 +48,7 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
         }
         return instancia;
     }
+            
             
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -166,7 +168,19 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    
+    /*
+    * Pone la ventana en la ultima ubicacion de la anterior       
+    */
+    public void ubicarVentana(Point p){
+        this.setLocation(p);
+    }        
+            
+    /*
+    * Devuelve la ubicacion de la ventana      
+    */
+    public Point posicion(){
+        return this.getLocation();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -189,7 +203,9 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
             if(exito){
                 JOptionPane.showMessageDialog(this, MENSAJE_EXITO,
                     Juego.VERSION, JOptionPane.INFORMATION_MESSAGE);
-                InicioSesionVista inicioSesion = InicioSesionVista.instancia(oyenteVista, juego);
+                InicioSesionVista inicioSesion = InicioSesionVista.
+                        instancia(oyenteVista, juego);
+                inicioSesion.ubicarVentana(posicion());
                 inicioSesion.setVisible(true);
                 this.setVisible(false);
             }else{

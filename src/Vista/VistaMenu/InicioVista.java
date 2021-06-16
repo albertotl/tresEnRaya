@@ -11,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import Controlador.OyenteVista;
 import Modelo.*;
 import Vista.JuegoVista;
+import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,20 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
             instancia = new InicioVista(oyenteIU, juego);
         }
         return instancia;
+    }
+    
+    /*
+    * Pone la ventana en la ultima ubicacion de la anterior       
+    */
+    public void ubicarVentana(Point p){
+        this.setLocation(p);
+    }        
+            
+    /*
+    * Devuelve la ubicacion de la ventana      
+    */
+    public Point posicion(){
+        return this.getLocation();
     }
     
     /*
@@ -217,6 +232,7 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
                 mostrarMensaje(NUEVA_PARTIDA);
                 JuegoVista juegoVista =  
                         JuegoVista.instancia(oyenteVista, juego);
+                juegoVista.ubicarVentana(posicion());
                 juegoVista.visualizarVentana();
                 jLabel3.setEnabled(false);
                 this.setVisible(false);
@@ -237,10 +253,9 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
             jLabel3.setEnabled(false);
             InicioSesionVista inicioSesion = 
                     InicioSesionVista.instancia(oyenteVista, juego);
+            inicioSesion.ubicarVentana(posicion());
             inicioSesion.setVisible(true);
             this.setVisible(false);
         }
-        
-        
     }    
 }
