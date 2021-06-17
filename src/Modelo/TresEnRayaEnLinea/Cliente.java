@@ -24,7 +24,6 @@ public class Cliente {
     public static int TIEMPO_ESPERA_LARGA_ENCUESTA = 0;   // infinito
     public static int TIEMPO_ESPERA_SERVIDOR = 1000;      
     public static int TIEMPO_REINTENTO_CONEXION_SERVIDOR = 10 * 1000; 
-    public static final String VACIO = "";
     
     private String URLServidor;
     private int puertoServidor;
@@ -53,7 +52,7 @@ public class Cliente {
                 new OutputStreamWriter(socket.getOutputStream())), true);
         
         salida.println(solicitud.toString());
-        if(parametros != null){
+        if (parametros != null) {
             salida.println(parametros);
         }
     }
@@ -156,7 +155,7 @@ public class Cliente {
             OyenteServidor oyenteServidor) throws Exception{
         
          
-        enviar(solicitud, tiempoEspera, VACIO);
+        enviar(solicitud, tiempoEspera, null);
         
         List<String> resultados = new ArrayList<>();
         

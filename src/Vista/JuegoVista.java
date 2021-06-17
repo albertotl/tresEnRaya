@@ -56,6 +56,7 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
         this.oyenteVista = oyenteVista;
         this.juego = juego;
         crearVentana();
+        ponerIcono();
         contrincante = juego.devuelveContrincante();
         etiquetaContrincante.setText(CONTRINCANTE + contrincante);
     }
@@ -64,9 +65,7 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
    * Crea la venta de juegoVista
    */
     private void crearVentana() {
-        //String idUsuario = juego.obtenerIdUsuario();
         ventana = new JFrame(Juego.VERSION);
-        
         /*
       * Captura windowsClosing y produce el evento Salir
          */
@@ -293,6 +292,16 @@ public class JuegoVista implements ActionListener, PropertyChangeListener{
     */
     public Point posicion(){
         return ventana.getLocation();
+    }
+    
+    /*
+    * Pone el icono de la aplicacion
+    */
+    public void ponerIcono(){
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image img = kit.createImage("img/icono.png");
+        ventana.setIconImage(img);
+        ventana.setTitle(Juego.VERSION);
     }
 
     @Override

@@ -11,7 +11,9 @@ import java.beans.PropertyChangeListener;
 import Controlador.OyenteVista;
 import Modelo.*;
 import Vista.JuegoVista;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +41,10 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         this.oyenteVista = oyenteVista;
         this.juego = juego;
         historial = new ArrayList<>();
+        this.setTitle(Juego.VERSION);
         initComponents();
         ponerDatos();
+        ponerIcono();
         juego.nuevoObservador(this);
         jLabel3.setEnabled(false);
         this.setLocationRelativeTo(null);
@@ -205,11 +209,16 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         oyenteVista.eventoProducido(OyenteVista.Evento.CERRAR_SESION, evt);
         
     }//GEN-LAST:event_jButton2ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
     
+    /*
+    * Pone el icono de la aplicacion
+    */
+    public void ponerIcono(){
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image img = kit.createImage("img/icono.png");
+        this.setIconImage(img);
+        this.setTitle(Juego.VERSION);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -247,15 +256,7 @@ public class InicioVista extends JFrame implements PropertyChangeListener{
         }else if (evt.getPropertyName().equals(Juego.PEDIR_HISTORIAL)){
             ponerDatos();
         }else if(evt.getPropertyName().equals(Juego.CERRAR_SESION)){
-            historial = null;
-            usuario = null;
-            jButton1.setEnabled(true);
-            jLabel3.setEnabled(false);
-            InicioSesionVista inicioSesion = 
-                    InicioSesionVista.instancia(oyenteVista, juego);
-            inicioSesion.ubicarVentana(posicion());
-            inicioSesion.setVisible(true);
-            this.setVisible(false);
+            oyenteVista.eventoProducido(OyenteVista.Evento.SALIR, evt);
         }
     }    
 }

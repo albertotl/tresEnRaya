@@ -11,9 +11,12 @@ import javax.swing.JFrame;
 import Modelo.*;
 
 import Controlador.OyenteVista;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class RegistroVista extends JFrame implements PropertyChangeListener{
@@ -34,7 +37,9 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
         this.oyenteVista = oyenteVista;
         this.juego = juego;
         juego.nuevoObservador(this);
+        this.setTitle(Juego.VERSION);
         initComponents();
+        ponerIcono();
         this.setLocationRelativeTo(null);
     }
     
@@ -180,6 +185,16 @@ public class RegistroVista extends JFrame implements PropertyChangeListener{
     */
     public Point posicion(){
         return this.getLocation();
+    }
+    
+    /*
+    * Pone el icono de la aplicacion
+    */
+    public void ponerIcono(){
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image img = kit.createImage("img/icono.png");
+        this.setIconImage(img);
+        this.setTitle(Juego.VERSION);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

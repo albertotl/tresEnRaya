@@ -10,15 +10,18 @@ package Modelo;
 import Modelo.TresEnRayaEnLinea.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class Juego implements OyenteServidor {
     
-    public static final String VERSION = "Tres en Raya 1.0";
+    public static final String VERSION = "Tres en Raya 2.0";
     public static final String CIRCULO = "O";
     public static final String CRUZ = "X";
     public static final String VACIO = "";
@@ -46,9 +49,13 @@ public class Juego implements OyenteServidor {
     private int puertoServidor = 25000;
     public static final String ERROR_GUARDAR_CONFIGURACION = 
             "No se ha guardado la configuracion";
+    private static final String FICHERO_CONFIG = "config.properties";
+    private static String COMENTARIO_CONFIG = 
+          Juego.VERSION + " configuración conexión Servidor";
     
     private Cliente cliente;
     private OyenteServidor oyenteServidor;
+    private Properties configuracion;
     private PropertyChangeSupport observadores;
     private Tablero tablero;
    
@@ -67,9 +74,23 @@ public class Juego implements OyenteServidor {
         oyenteServidor = this;
         conectado = false;
         observadores = new PropertyChangeSupport(this);
-        
+        leerConfiguracion();
         cliente = new Cliente(URLServidor, puertoServidor);
     }
+    
+    private void leerConfiguracion() {
+        try{
+            configuracion = new Properties();
+            configuracion.load(new FileInputStream(FICHERO_CONFIG));
+            
+            URLServidor = configuracion.getProperty(URL_SERVIDOR);
+            puertoServidor = Integer.parseInt(
+                    configuracion.getProperty(PUERTO_SERVIDOR));
+        } catch(Exception e){
+            System.out.println(e);
+        }
+    }
+    
     
     public Tablero devuelveTablero(){
         return tablero;
@@ -342,6 +363,7 @@ public class Juego implements OyenteServidor {
                     idUsuario = null;
                     contrincante = null;
                     idJuego = null;
+                    historial = null;
                 }
                 this.observadores.firePropertyChange(CERRAR_SESION,
                     null, null);
